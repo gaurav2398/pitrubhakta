@@ -286,7 +286,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
           </div>
         </div>
         <div class="field"><label>Ref. By Dr.</label>
-          <input type="text" id="sf-ref" list="sref-options" placeholder="Select or type..." oninput="seroSync()">
+          <input type="text" id="sf-ref" list="sref-options" placeholder="Select or type..." value="Sharda Netralay" oninput="seroSync()">
           <datalist id="sref-options"><option value="None"><option value="Self"><option value="Sharda Netralay"></datalist>
         </div>
 
@@ -294,7 +294,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
         <div class="result-group">
           <h3>1) HBsAg Antibody</h3>
           <div class="field"><label>Result</label>
-            <select id="sf-hbsag" onchange="seroSync()"><option value="NEGATIVE">NEGATIVE</option><option value="POSITIVE">POSITIVE</option></select>
+            <select id="sf-hbsag" onchange="seroSync()"><option value="NEGATIVE">NEGATIVE</option><option value="POSITIVE">POSITIVE</option><option value="NOT_TESTED" selected>Not Tested</option></select>
           </div>
         </div>
         <div class="result-group">
@@ -303,13 +303,16 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
             <select id="sf-hiv" onchange="seroSync()">
               <option value="NON-REACTIVE for HIV I &amp; II">NON-REACTIVE</option>
               <option value="REACTIVE for HIV-I &amp; NON-REACTIVE For HIV-II">REACTIVE for HIV-I &amp; NON-REACTIVE For HIV-II</option>
+              <option value="REACTIVE for HIV II &amp; NON-REACTIVE for HIV I">REACTIVE for HIV II &amp; NON-REACTIVE for HIV I</option>
+              <option value="REACTIVE for HIV I &amp; II">REACTIVE for HIV I &amp; II</option>
+              <option value="NOT_TESTED" selected>Not Tested</option>
             </select>
           </div>
         </div>
         <div class="result-group">
           <h3>3) HCV Test</h3>
           <div class="field"><label>Result</label>
-            <select id="sf-hcv" onchange="seroSync()"><option value="NEGATIVE">NEGATIVE</option><option value="POSITIVE">POSITIVE</option></select>
+            <select id="sf-hcv" onchange="seroSync()"><option value="NEGATIVE">NEGATIVE</option><option value="POSITIVE">POSITIVE</option><option value="NOT_TESTED" selected>Not Tested</option></select>
           </div>
         </div>
         <div class="btn-row">
@@ -340,7 +343,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
           <!-- BODY -->
           <div class="report-body">
             <table class="meta-table"><colgroup><col class="c-label"><col class="c-colon"><col class="c-value"><col class="c-gap"><col class="c-rlabel"><col class="c-rcolon"><col class="c-rvalue"></colgroup>
-              <tr><td class="meta-label">Name</td><td class="meta-colon">:</td><td class="meta-value" id="sr-name">—</td><td></td><td class="meta-label">Date</td><td class="meta-colon">:</td><td class="meta-value" id="sr-date">—</td></tr>
+              <tr><td class="meta-label">Patient's Name</td><td class="meta-colon">:</td><td class="meta-value" id="sr-name">—</td><td></td><td class="meta-label">Date</td><td class="meta-colon">:</td><td class="meta-value" id="sr-date">—</td></tr>
               <tr><td class="meta-label">Ref. By Dr.</td><td class="meta-colon">:</td><td class="meta-value" id="sr-ref">—</td><td></td><td class="meta-label">Sex</td><td class="meta-colon">:</td><td class="meta-value" id="sr-sex">Male</td></tr>
             </table>
             <hr class="report-hr">
@@ -404,7 +407,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
           </div>
         </div>
         <div class="field"><label>Ref. By Dr.</label>
-          <input type="text" id="hf-ref" list="href-options" placeholder="Select or type..." oninput="haemoSync()">
+          <input type="text" id="hf-ref" list="href-options" placeholder="Select or type..." value="Sharda Netralay" oninput="haemoSync()">
           <datalist id="href-options"><option value="None"><option value="Self"><option value="Sharda Netralay"></datalist>
         </div>
 
@@ -431,7 +434,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
           <div class="diff-counter" id="diff-counter" style="display:none"></div>
         </div>
 
-        <div class="field"><label>Platelets (Lakh)</label><input type="text" id="hf-plat" placeholder="e.g. 2.48" oninput="haemoSync()"></div>
+        <div class="field"><label>Platelets</label><div class="field-row"><input type="text" id="hf-plat" placeholder="e.g. 2.25" oninput="haemoSync()" style="flex:1"><select id="hf-plat-unit" onchange="haemoSync()" style="width:110px"><option value="lakhs" selected>Lakhs</option><option value="thousands">Thousands</option></select></div></div>
         <div class="field"><label>Blood Sugar Random (mg/dl)</label><input type="text" id="hf-sugar" placeholder="e.g. 102.0" oninput="haemoSync()"></div>
 
         <div class="result-group">
@@ -505,7 +508,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
           <!-- HAEMOGRAM BODY -->
           <div class="report-body">
             <table class="meta-table"><colgroup><col class="c-label"><col class="c-colon"><col class="c-value"><col class="c-gap"><col class="c-rlabel"><col class="c-rcolon"><col class="c-rvalue"></colgroup>
-              <tr><td class="meta-label">Patient's Name</td><td class="meta-colon">:</td><td class="meta-value" id="hr-name">—</td><td></td><td class="meta-label">Date</td><td class="meta-colon">:</td><td class="meta-value" id="hr-date">—</td></tr>
+              <tr><td class="meta-label" style="white-space:nowrap">Patient's Name</td><td class="meta-colon">:</td><td class="meta-value" id="hr-name">—</td><td></td><td class="meta-label">Date</td><td class="meta-colon">:</td><td class="meta-value" id="hr-date">—</td></tr>
               <tr><td class="meta-label">Reference By</td><td class="meta-colon">:</td><td class="meta-value" id="hr-ref">—</td><td></td><td class="meta-label">Sex</td><td class="meta-colon">:</td><td class="meta-value" id="hr-sex">Male</td></tr>
             </table>
             <hr class="report-hr">
@@ -601,7 +604,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
           </div>
         </div>
         <div class="field"><label>Ref. By Dr.</label>
-          <input type="text" id="bsf-ref" list="bsref-opts" placeholder="Select or type..." oninput="bsSync()">
+          <input type="text" id="bsf-ref" list="bsref-opts" placeholder="Select or type..." value="Sharda Netralay" oninput="bsSync()">
           <datalist id="bsref-opts"><option value="None"><option value="Self"><option value="Sharda Netralay"></datalist>
         </div>
 
@@ -792,7 +795,7 @@ function fmtBSL(v){
 }
 
 function bsSync(){
-  document.getElementById('bsr-name').textContent=bsf('bsf-name')||'—';
+  document.getElementById('bsr-name').textContent=toTitleCase(bsf('bsf-name'))||'—';
   document.getElementById('bsr-ref').textContent=bsf('bsf-ref')||'—';
   document.getElementById('bsr-sex').textContent=document.getElementById('bsf-sex').value;
   document.getElementById('bsr-date').textContent=(document.getElementById('bsf-date')?.value)||today;
@@ -1149,16 +1152,22 @@ function saveTemplates(){
 }
 
 function seroSync(){
-  document.getElementById('sr-name').textContent=document.getElementById('sf-name').value.trim()||'—';
+  document.getElementById('sr-name').textContent=toTitleCase(document.getElementById('sf-name').value.trim())||'—';
   document.getElementById('sr-ref').textContent=document.getElementById('sf-ref').value.trim()||'—';
   document.getElementById('sr-sex').textContent=document.getElementById('sf-sex').value;
   document.getElementById('sr-date').textContent=document.getElementById('sf-date').value;
   const hbsag=document.getElementById('sf-hbsag').value;
   const hbsagEl=document.getElementById('sr-hbsag');
-  hbsagEl.textContent=hbsag;hbsagEl.classList.toggle('result-positive',hbsag==='POSITIVE');
+  hbsagEl.textContent=hbsag==='NOT_TESTED'?'Not Tested':hbsag;
+  hbsagEl.classList.toggle('result-positive',hbsag==='POSITIVE');
+  // Hide entire entry if Not Tested
+  const hbsagEntry=document.querySelector('[id="sr-hbsag"]')?.closest('.test-entry');
+  if(hbsagEntry) hbsagEntry.style.display=hbsag==='NOT_TESTED'?'none':'';
   document.getElementById('sr-hbsag-method').textContent=hbsag==='POSITIVE'?tpl.hbsag_pos_method:tpl.hbsag_neg_method;
   document.getElementById('sr-hbsag-note').textContent=hbsag==='POSITIVE'?tpl.hbsag_pos_note:tpl.hbsag_neg_note;
   const hiv=document.getElementById('sf-hiv').value;
+  const hivEntry=document.querySelector('[id="sr-hiv"]')?.closest('.test-entry');
+  if(hivEntry) hivEntry.style.display=hiv==='NOT_TESTED'?'none':'';
   const hivEl=document.getElementById('sr-hiv');
   hivEl.innerHTML=hiv;hivEl.classList.toggle('result-positive',hiv.startsWith('REACTIVE'));
   document.getElementById('sr-hiv-method').textContent=hiv.startsWith('REACTIVE')?tpl.hiv_rx_method:tpl.hiv_nrx_method;
@@ -1172,7 +1181,10 @@ function seroSync(){
   }
   const hcv=document.getElementById('sf-hcv').value;
   const hcvEl=document.getElementById('sr-hcv');
-  hcvEl.textContent=hcv;hcvEl.classList.toggle('result-positive',hcv==='POSITIVE');
+  hcvEl.textContent=hcv==='NOT_TESTED'?'Not Tested':hcv;
+  hcvEl.classList.toggle('result-positive',hcv==='POSITIVE');
+  const hcvEntry=document.getElementById('sr-hcv-entry');
+  if(hcvEntry) hcvEntry.style.display=hcv==='NOT_TESTED'?'none':'';
 }
 
 function buildSeroRec(){return{type:'sero',name:document.getElementById('sf-name').value.trim()||'Unknown',date:document.getElementById('sf-date').value,sex:document.getElementById('sf-sex').value,ref:document.getElementById('sf-ref').value.trim(),hbsag:document.getElementById('sf-hbsag').value,hiv:document.getElementById('sf-hiv').value,hcv:document.getElementById('sf-hcv').value,savedAt:new Date().toISOString()};}
@@ -1181,6 +1193,14 @@ function loadSeroRec(r){document.getElementById('sf-name').value=r.name;document
 /* ══ Smart print — only prints the specific report ══ */
 /* ══ Per-tab print margin settings ══ */
 const DEFAULT_MARGINS={top:15,bottom:15,left:15,right:15};
+const TAB_DEFAULT_MARGINS={
+  sero:{top:48,bottom:80,left:26,right:26},
+  haemo:{top:48,bottom:15,left:20,right:21},
+  bs:{top:4,bottom:15,left:11,right:5},
+  biochem:{top:48,bottom:15,left:23,right:23},
+  crpra:{top:47,bottom:15,left:23,right:23},
+  bill:{top:26,bottom:15,left:20,right:19},
+};
 const TAB_KEYS={
   'sero-report':'sero','haemo-report':'haemo','bs-report':'bs',
   'biochem-report':'biochem','crpra-report':'crpra','bill-report':'bill'
@@ -1189,7 +1209,8 @@ const TAB_KEYS={
 function getMargins(reportId){
   const key='_pcl_margin_'+(TAB_KEYS[reportId]||'default');
   try{const s=localStorage.getItem(key);if(s)return JSON.parse(s);}catch(e){}
-  return {...DEFAULT_MARGINS};
+  const tabKey=TAB_KEYS[reportId]||'default';
+  return TAB_DEFAULT_MARGINS[tabKey]?{...TAB_DEFAULT_MARGINS[tabKey]}:{...DEFAULT_MARGINS};
 }
 function saveMargins(tabKey,margins){
   localStorage.setItem('_pcl_margin_'+tabKey,JSON.stringify(margins));
@@ -1253,6 +1274,14 @@ function printOnly(reportId, pageSize='A4'){
   report.parentNode.insertBefore(placeholder,report);
   wrapper.appendChild(report);
   document.body.appendChild(wrapper);
+
+  // Reload page after print dialog closes to reset all fields
+  const handleAfterPrint=()=>{
+    window.removeEventListener('afterprint',handleAfterPrint);
+    setTimeout(()=>window.location.reload(),300);
+  };
+  window.addEventListener('afterprint',handleAfterPrint);
+
   window.print();
   setTimeout(()=>{
     placeholder.parentNode.insertBefore(report,placeholder);
@@ -1309,17 +1338,19 @@ function haemoSync(){
   const hasDiff=hv('hf-neut')||hv('hf-lymp')||hv('hf-eosi')||hv('hf-mono')||hv('hf-baso');
   if(hasDiff){
     html+=`<div style="font-size:11pt;font-weight:700;padding:3px 0"><b>Differential :</b></div>`;
-    if(hv('hf-neut')) html+=line('&nbsp;&nbsp;&nbsp;Neutrophils', hv('hf-neut')+'%', '50 - 70%', {bold:false,tight:true});
-    if(hv('hf-lymp')) html+=line('&nbsp;&nbsp;&nbsp;Lymphocytes', hv('hf-lymp')+'%', '20 - 40%', {bold:false,tight:true});
-    if(hv('hf-eosi')) html+=line('&nbsp;&nbsp;&nbsp;Eosinophils', hv('hf-eosi')+'%', '1 - 6%', {bold:false,tight:true});
-    if(hv('hf-mono')) html+=line('&nbsp;&nbsp;&nbsp;Monocytes', hv('hf-mono')+'%', '2 - 10%', {bold:false,tight:true});
-    if(hv('hf-baso')) html+=line('&nbsp;&nbsp;&nbsp;Basophils', hv('hf-baso')+'%', '0 - 1%', {bold:false,tight:true});
+    const diffRow=(label,val,range)=>`<div style="display:flex;font-size:11pt;padding:1px 0;line-height:1.5;font-family:inherit"><span style="flex:0 0 38%;padding-left:18px">${label}</span><span style="flex:0 0 10%;text-align:right;padding-right:8px">${val}</span><span style="flex:0 0 12%">%</span><span style="flex:1">${range}</span></div>`;
+    if(hv('hf-neut')) html+=diffRow('Neutrophils',hv('hf-neut'),'50 - 70%');
+    if(hv('hf-lymp')) html+=diffRow('Lymphocytes',hv('hf-lymp'),'20 - 40%');
+    if(hv('hf-eosi')) html+=diffRow('Eosinophils',hv('hf-eosi'),'1 - 6%');
+    if(hv('hf-mono')) html+=diffRow('Monocytes',hv('hf-mono'),'2 - 10%');
+    if(hv('hf-baso')) html+=diffRow('Basophils',hv('hf-baso'),'0 - 1%');
     html+=gap();
   }
 
   // Platelets
   if(hv('hf-plat')){
-    html+=line('Platelets', hv('hf-plat')+' lakhs', '1.5 - 4.5 Lakhs/cmm');
+    const platUnit=document.getElementById('hf-plat-unit')?.value||'lakhs';
+    html+=line('Platelets', hv('hf-plat')+' '+platUnit, '1.5 - 4.5 Lakhs/cmm');
   }
 
   // ESR
@@ -1361,26 +1392,22 @@ function haemoSync(){
   if(hv('hf-ct')) html+=line('Clotting Time (CT)', hv('hf-ct'), '4-10 Min', {underline:true});
 
   // HCV
-  if(hv('hf-hcv')) html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit">
-    <span style="flex:0 0 38%"><b>HCV Test</b></span>
+  if(hv('hf-hcv')){html+=`<div style="height:6px"></div>`;
+  html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit">
+    <span style="flex:0 0 38%"><b><u>HCV Test</u></b></span>
     <span style="flex:0 0 22%">${hv('hf-hcv')}</span>
     <span style="flex:1;white-space:nowrap">[ Immunochromatography Method ]</span>
-  </div>`;
+  </div>`;}
 
   // Australia Antigen
-  if(hv('hf-aat')) html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit">
-    <span style="flex:0 0 38%"><b><u>Australia Antigen Test</u></b></span>
-    <span style="flex:0 0 22%">${hv('hf-aat')}</span>
-    <span style="flex:1;white-space:nowrap">[ Immunochromatography Method ]</span>
-  </div>`;
+  if(hv('hf-aat')){html+=`<div style="height:6px"></div>`;
+  html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit"><span style="flex:0 0 38%"><b><u>Australia Antigen Test</u></b></span><span style="flex:0 0 22%">${hv('hf-aat')}</span><span style="flex:1;white-space:nowrap">[ Immunochromatography Method ]</span></div>`;}
 
   // HIV — value spans full remaining width so it fits on one line
   if(hv('hf-hiv')){
-    html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit">
-      <span style="flex:0 0 38%;font-size:11pt"><b><u>H.I.V Antibody ( HIV-I & II )</u></b></span>
-      <span style="flex:1;font-size:11pt;white-space:nowrap">${hv('hf-hiv')}</span>
-    </div>`;
-    html+=`<div style="font-size:11pt;padding:1px 0;line-height:1.5;color:#333">(This is a rapid diagnostic Test.<br>Done by Alere Trueline Device mtd.)</div>`;
+    html+=`<div style="height:6px"></div>`;
+    html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit"><span style="flex:0 0 38%;font-size:11pt"><b><u>H.I.V Antibody ( HIV-I & II )</u></b></span><span style="flex:1;font-size:11pt;white-space:nowrap">${hv('hf-hiv')}</span></div>`;
+    html+=`<div style="font-size:9pt;padding:1px 0;line-height:1.6;color:#333;padding-left:38%">(This is a rapid diagnostic Test.<br>Done by Device mtd.)</div>`;
   }
 
   document.getElementById('haemo-table-body').innerHTML=html;
@@ -1398,7 +1425,7 @@ function updateESRHint(){
 function buildHaemoRec(){
   return{type:'haemo',name:hv('hf-name')||'Unknown',date:hv('hf-date'),sex:document.getElementById('hf-sex').value,
     ref:hv('hf-ref'),hb:hv('hf-hb'),wbc:hv('hf-wbc'),esr:hv('hf-esr'),neut:hv('hf-neut'),lymp:hv('hf-lymp'),
-    eosi:hv('hf-eosi'),mono:hv('hf-mono'),baso:hv('hf-baso'),plat:hv('hf-plat'),
+    eosi:hv('hf-eosi'),mono:hv('hf-mono'),baso:hv('hf-baso'),plat:hv('hf-plat'),platUnit:document.getElementById('hf-plat-unit')?.value||'lakhs',
     sugar:hv('hf-sugar'),alb:hv('hf-alb'),usg:hv('hf-usg'),mic:hv('hf-mic'),
     bt:hv('hf-bt'),ct:hv('hf-ct'),hcv:hv('hf-hcv'),aat:hv('hf-aat'),hiv:hv('hf-hiv'),
     savedAt:new Date().toISOString()};
@@ -1407,7 +1434,7 @@ function loadHaemoRec(r){
   const f=(id,v)=>{if(v!==undefined&&document.getElementById(id))document.getElementById(id).value=v;};
   f('hf-name',r.name);f('hf-sex',r.sex);f('hf-ref',r.ref);f('hf-hb',r.hb);f('hf-wbc',r.wbc);f('hf-esr',r.esr);
   f('hf-neut',r.neut);f('hf-lymp',r.lymp);f('hf-eosi',r.eosi);f('hf-mono',r.mono);f('hf-baso',r.baso);
-  f('hf-plat',r.plat);f('hf-sugar',r.sugar);f('hf-alb',r.alb);f('hf-usg',r.usg);f('hf-mic',r.mic);
+  f('hf-plat',r.plat);if(r.platUnit&&document.getElementById('hf-plat-unit'))document.getElementById('hf-plat-unit').value=r.platUnit;f('hf-sugar',r.sugar);f('hf-alb',r.alb);f('hf-usg',r.usg);f('hf-mic',r.mic);
   f('hf-bt',r.bt);f('hf-ct',r.ct);f('hf-hcv',r.hcv);f('hf-aat',r.aat);f('hf-hiv',r.hiv);
   // Try to restore dropdown selectors from stored text value
   restoreTimeDropdown('bt', r.bt||'');
@@ -2485,7 +2512,7 @@ async function billShare(){
             <table class="meta-table">
               <colgroup><col class="c-label"><col class="c-colon"><col class="c-value"><col class="c-gap"><col class="c-rlabel"><col class="c-rcolon"><col class="c-rvalue"></colgroup>
               <tr>
-                <td class="meta-label">Name</td><td class="meta-colon">:</td>
+                <td class="meta-label">Patient's Name</td><td class="meta-colon">:</td>
                 <td class="meta-value" id="cr-name">—</td>
                 <td></td>
                 <td class="meta-label">Date</td><td class="meta-colon">:</td>
@@ -2744,7 +2771,7 @@ async function crpraShare(){
             <table class="meta-table">
               <colgroup><col class="c-label"><col class="c-colon"><col class="c-value"><col class="c-gap"><col class="c-rlabel"><col class="c-rcolon"><col class="c-rvalue"></colgroup>
               <tr>
-                <td class="meta-label">Patient Name</td><td class="meta-colon">:</td>
+                <td class="meta-label">Patient's Name</td><td class="meta-colon">:</td>
                 <td class="meta-value" id="bcr-name">—</td>
                 <td></td>
                 <td class="meta-label">Date</td><td class="meta-colon">:</td>
@@ -3025,11 +3052,13 @@ function saveTabMargins(key){
 }
 
 function resetTabMargins(key){
-  saveMargins(key,{...DEFAULT_MARGINS});
+  const def=TAB_DEFAULT_MARGINS[key]||DEFAULT_MARGINS;
+  saveMargins(key,{...def});
   ['top','bottom','left','right'].forEach(side=>{
     const slider=document.getElementById(`ms-${key}-${side}`);
     const val=document.getElementById(`msv-${key}-${side}`);
-    if(slider){slider.value=DEFAULT_MARGINS[side];val.textContent=DEFAULT_MARGINS[side]+'mm';}
+    const def2=TAB_DEFAULT_MARGINS[key]||DEFAULT_MARGINS;
+    if(slider){slider.value=def2[side];val.textContent=def2[side]+'mm';}
   });
   const msg=document.getElementById('settings-saved-'+key);
   msg.textContent='↺ Reset to default (15mm)';
