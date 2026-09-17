@@ -356,7 +356,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
               <div class="test-method" id="sr-hiv-method"></div>
               <div class="test-note" id="sr-hiv-note"></div>
             </div>
-            <div class="test-entry" id="sr-hcv-entry" style="display:none">
+            <div class="test-entry" id="sr-hcv-entry">
               <div class="test-row"><span class="test-name">3) HCV Test</span><span class="test-result" id="sr-hcv">NEGATIVE</span></div>
               <div class="test-method">[ Immunochromatography Method ]</div>
             </div>
@@ -1325,8 +1325,16 @@ function haemoSync(){
   // ESR
   if(hv('hf-esr')){
     html+=gap();
-    html+=line('ESR', hv('hf-esr')+' mm.', 'Male 0 - 8 mm. at the end of first Hr.');
-    html+=line("(Westergreen's method)", '', 'Female 0 - 20 mm. at the end of first Hr.', {bold:false});
+    html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit">
+      <span style="flex:0 0 38%"><b>ESR</b></span>
+      <span style="flex:0 0 22%">${hv('hf-esr')} mm.</span>
+      <span style="flex:1;white-space:nowrap">Male 0 - 8 mm. at the end of first Hr.</span>
+    </div>`;
+    html+=`<div style="display:flex;font-size:11pt;padding:1px 0;line-height:1.5;font-family:inherit">
+      <span style="flex:0 0 38%">(Westergreen's method)</span>
+      <span style="flex:0 0 22%"></span>
+      <span style="flex:1;white-space:nowrap">Female 0 - 20 mm. at the end of first Hr.</span>
+    </div>`;
     html+=gap();
   }
 
@@ -1338,21 +1346,14 @@ function haemoSync(){
   // Urine Exam
   const alb=hv('hf-alb'),usg=hv('hf-usg'),mic=hv('hf-mic');
   if(alb||usg||mic){
-    const firstItem = alb ? `Albumin : ${alb}` : usg ? `Sugar : ${usg}` : `Microscopy : ${mic}`;
-    html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5">
-      <span style="flex:0 0 38%;font-size:11pt"><b><u>Urine Exam</u></b></span>
-      <span style="flex:1;font-size:11pt">${firstItem}</span>
+    html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit">
+      <span style="flex:0 0 38%"><b><u>Urine Exam</u></b></span>
+      <span style="flex:1">
+        ${alb?`<div style="display:flex"><span style="width:90px">Albumin</span><span style="width:14px">:</span><span>${alb}</span></div>`:''}
+        ${usg?`<div style="display:flex"><span style="width:90px">Sugar</span><span style="width:14px">:</span><span>${usg}</span></div>`:''}
+        ${mic?`<div style="display:flex"><span style="width:90px">Microscopy</span><span style="width:14px">:</span><span>${mic}</span></div>`:''}
+      </span>
     </div>`;
-    const rest=[];
-    if(alb && usg) rest.push(`Sugar : ${usg}`);
-    if(alb && mic) rest.push(`Microscopy : ${mic}`);
-    else if(!alb && usg && mic) rest.push(`Microscopy : ${mic}`);
-    rest.forEach(item=>{
-      html+=`<div style="display:flex;font-size:11pt;padding:1px 0;line-height:1.5">
-        <span style="flex:0 0 38%"></span>
-        <span style="flex:1;font-size:11pt">${item}</span>
-      </div>`;
-    });
   }
 
   // BT / CT
@@ -1360,10 +1361,18 @@ function haemoSync(){
   if(hv('hf-ct')) html+=line('Clotting Time (CT)', hv('hf-ct'), '4-10 Min', {underline:true});
 
   // HCV
-  if(hv('hf-hcv')) html+=line('HCV Test', hv('hf-hcv'), '[ Immunochromatography Method ]');
+  if(hv('hf-hcv')) html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit">
+    <span style="flex:0 0 38%"><b>HCV Test</b></span>
+    <span style="flex:0 0 22%">${hv('hf-hcv')}</span>
+    <span style="flex:1;white-space:nowrap">[ Immunochromatography Method ]</span>
+  </div>`;
 
   // Australia Antigen
-  if(hv('hf-aat')) html+=line('Australia Antigen Test', hv('hf-aat'), '[ Immunochromatography Method ]', {underline:true});
+  if(hv('hf-aat')) html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit">
+    <span style="flex:0 0 38%"><b><u>Australia Antigen Test</u></b></span>
+    <span style="flex:0 0 22%">${hv('hf-aat')}</span>
+    <span style="flex:1;white-space:nowrap">[ Immunochromatography Method ]</span>
+  </div>`;
 
   // HIV — value spans full remaining width so it fits on one line
   if(hv('hf-hiv')){
