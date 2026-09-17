@@ -1323,7 +1323,9 @@ function haemoSync(){
 
   // Haemoglobin
   if(hv('hf-hb')){
-    html+=line('Haemoglobin', hv('hf-hb')+' g/dl', 'Male : 13.5 to 18.0 g/dl');
+    const hbVal=parseFloat(hv('hf-hb'));
+    const hbDisplay=isNaN(hbVal)?hv('hf-hb'):hbVal.toFixed(1);
+    html+=line('Haemoglobin', hbDisplay+' g/dl', 'Male : 13.5 to 18.0 g/dl');
     html+=line('','','Female : 12.0 to 16.0 g/dl',{bold:false});
     html+=gap();
   }
