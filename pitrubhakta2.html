@@ -93,7 +93,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
 .meta-table{width:100%;border-collapse:collapse;margin-bottom:5px;table-layout:fixed}
 .meta-table td{padding:3px 0;font-size:11pt;vertical-align:top;overflow:hidden}
 .meta-table col.c-label{width:112px}.meta-table col.c-colon{width:14px}.meta-table col.c-value{width:auto}
-.meta-table col.c-gap{width:20px}.meta-table col.c-rlabel{width:46px}.meta-table col.c-rcolon{width:14px}.meta-table col.c-rvalue{width:118px}
+.meta-table col.c-gap{width:40px}.meta-table col.c-rlabel{width:46px}.meta-table col.c-rcolon{width:14px}.meta-table col.c-rvalue{width:110px}
 .meta-label{font-weight:400;color:#333;white-space:nowrap}.meta-value{font-weight:700}.meta-colon{padding:0 3px 0 2px;color:#333}
 
 /* ── Serology report styles ── */
@@ -363,7 +363,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
               <div class="test-row"><span class="test-name">3) HCV Test</span><span class="test-result" id="sr-hcv">NEGATIVE</span></div>
               <div class="test-method">[ Immunochromatography Method ]</div>
             </div>
-            </div><!-- /flex-grow -->
+            <div style="margin-top:7.5em"></div>
             <div class="signature-area">SIGNATURE</div>
           </div>
           <div class="lab-footer"><div class="footer-ornament">&#x1F4D6;&#x2764;&#x1F4D6;</div><div class="footer-bar"><div class="footer-text">These are only reading based on technical analysis and no opinion is indicated therefore said reading's<br>should please be got certified by pathologist before using the same for diagnosis and treatment</div></div></div>
@@ -795,7 +795,7 @@ function fmtBSL(v){
 }
 
 function bsSync(){
-  document.getElementById('bsr-name').textContent=toTitleCase(bsf('bsf-name'))||'—';
+  document.getElementById('bsr-name').textContent=toTitleCase(bsf('bsf-name'))||'—';autoShrinkName('bsr-name');
   document.getElementById('bsr-ref').textContent=bsf('bsf-ref')||'—';
   document.getElementById('bsr-sex').textContent=document.getElementById('bsf-sex').value;
   document.getElementById('bsr-date').textContent=(document.getElementById('bsf-date')?.value)||today;
@@ -1145,6 +1145,7 @@ function saveTemplates(){
 
 function seroSync(){
   document.getElementById('sr-name').textContent=toTitleCase(document.getElementById('sf-name').value.trim())||'—';
+  autoShrinkName('sr-name');
   document.getElementById('sr-ref').textContent=document.getElementById('sf-ref').value.trim()||'—';
   document.getElementById('sr-sex').textContent=document.getElementById('sf-sex').value;
   document.getElementById('sr-date').textContent=document.getElementById('sf-date').value;
@@ -1186,9 +1187,9 @@ function loadSeroRec(r){document.getElementById('sf-name').value=r.name;document
 /* ══ Per-tab print margin settings ══ */
 const DEFAULT_MARGINS={top:15,bottom:15,left:15,right:15};
 const TAB_DEFAULT_MARGINS={
-  sero:{top:15,bottom:15,left:14,right:12},
-  haemo:{top:15,bottom:15,left:14,right:12},
-  bs:{top:8,bottom:5,left:5,right:5},
+  sero:{top:48,bottom:0,left:8,right:8},
+  haemo:{top:48,bottom:0,left:7,right:7},
+  bs:{top:4,bottom:15,left:11,right:5},
   biochem:{top:48,bottom:15,left:23,right:23},
   crpra:{top:47,bottom:15,left:23,right:23},
   bill:{top:26,bottom:15,left:20,right:19},
@@ -1244,6 +1245,8 @@ function printOnly(reportId, pageSize='A4'){
         padding:${m.top}mm ${m.right}mm ${m.bottom}mm ${m.left}mm !important;
       }
       .print-target-wrap .report-body { flex:1!important; }
+      .print-target-wrap #sero-report { min-height:unset!important; display:block!important; }
+      .print-target-wrap #sero-report .report-body { flex:none!important; min-height:unset!important; }
       /* lab-footer flows naturally */
       .print-target-wrap .lab-name { font-size:${isA5?'13pt':'18pt'}!important; }
       /* Hide header and footer during print — using pre-printed paper */
@@ -1302,6 +1305,7 @@ function hv(id){return document.getElementById(id).value.trim();}
 
 function haemoSync(){
   document.getElementById('hr-name').textContent=hv('hf-name')||'—';
+  autoShrinkName('hr-name');
   document.getElementById('hr-ref').textContent=hv('hf-ref')||'—';
   document.getElementById('hr-sex').textContent=document.getElementById('hf-sex').value;
   document.getElementById('hr-date').textContent=(document.getElementById('hf-date')?.value)||today;
@@ -1496,6 +1500,17 @@ async function haemoPrint(){
 }
 
 /* ══ Title Case for name inputs ══ */
+function autoShrinkName(elId){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  el.style.fontSize='';
+  const sizes=[11,10,9,8.5,8];
+  for(const s of sizes){
+    el.style.fontSize=s+'pt';
+    if(el.scrollWidth<=el.offsetWidth+2||s===sizes[sizes.length-1])break;
+  }
+}
+
 function toTitleCase(str){
   return str.replace(/\w\S*/g, w=>w.charAt(0).toUpperCase()+w.substr(1).toLowerCase());
 }
@@ -2338,7 +2353,7 @@ function removeBillRow(i){
 /* ══ Bill sync ══ */
 function billSync(){
   // patient info
-  document.getElementById('br-name').textContent=toTitleCase(document.getElementById('bf-name').value.trim())||'—';
+  document.getElementById('br-name').textContent=toTitleCase(document.getElementById('bf-name').value.trim())||'—';autoShrinkName('br-name');
   const ref=document.getElementById('bf-ref').value.trim();
   document.getElementById('br-ref').textContent=ref||'—';
   const age=document.getElementById('bf-age').value.trim();
@@ -2636,7 +2651,7 @@ function cfv(id){return document.getElementById(id).value.trim();}
 
 function crpraSync(){
   // patient info
-  document.getElementById('cr-name').textContent = cfv('cf-name')||'—';
+  document.getElementById('cr-name').textContent=cfv('cf-name')||'—';autoShrinkName('cr-name');
   document.getElementById('cr-ref').textContent  = cfv('cf-ref')||'—';
   document.getElementById('cr-sex').textContent  = document.getElementById('cf-sex').value+'/0 Years.';
   document.getElementById('cr-date').textContent = (document.getElementById('cf-date')?.value)||today;
@@ -2906,7 +2921,7 @@ const BC_TESTS=[
 ];
 
 function biochemSync(){
-  document.getElementById('bcr-name').textContent = bcfv('bcf-name')||'—';
+  document.getElementById('bcr-name').textContent=bcfv('bcf-name')||'—';autoShrinkName('bcr-name');
   document.getElementById('bcr-ref').textContent  = bcfv('bcf-ref')||'—';
   document.getElementById('bcr-sex').textContent  = document.getElementById('bcf-sex').value;
   document.getElementById('bcr-date').textContent = (document.getElementById('bcf-date')?.value)||today;
