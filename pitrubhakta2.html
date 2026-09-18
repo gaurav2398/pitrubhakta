@@ -430,7 +430,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
             <div class="field"><label>Eosinophils %</label><input type="number" id="hf-eosi" placeholder="e.g. 03" min="0" max="100" oninput="haemoSync();checkDiff()"></div>
             <div class="field"><label>Monocytes %</label><input type="number" id="hf-mono" placeholder="e.g. 03" min="0" max="100" oninput="haemoSync();checkDiff()"></div>
           </div>
-          <div class="field"><label>Basophils %</label><input type="number" id="hf-baso" placeholder="e.g. 00" min="0" max="100" oninput="haemoSync();checkDiff()"></div>
+          <div class="field"><label>Basophils %</label><input type="number" id="hf-baso" value="00" placeholder="e.g. 00" min="0" max="100" oninput="haemoSync();checkDiff()"></div>
           <div class="diff-counter" id="diff-counter" style="display:none"></div>
         </div>
 
@@ -470,13 +470,13 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
           </div>
         </div>
         <div class="field"><label>HCV Test</label>
-          <select id="hf-hcv" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="NEGATIVE">NEGATIVE</option><option value="POSITIVE">POSITIVE</option></select>
+          <select id="hf-hcv" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="NEGATIVE" selected>NEGATIVE</option><option value="POSITIVE">POSITIVE</option></select>
         </div>
         <div class="field"><label>Australia Antigen Test</label>
-          <select id="hf-aat" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="NEGATIVE">NEGATIVE</option><option value="POSITIVE">POSITIVE</option></select>
+          <select id="hf-aat" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="NEGATIVE" selected>NEGATIVE</option><option value="POSITIVE">POSITIVE</option></select>
         </div>
         <div class="field"><label>H.I.V Antibody (HIV-I &amp; II)</label>
-          <select id="hf-hiv" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="NON-REACTIVE for HIV I &amp; II">NON-REACTIVE</option><option value="REACTIVE for HIV I &amp; II">REACTIVE</option></select>
+          <select id="hf-hiv" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="NON-REACTIVE for HIV I &amp; II" selected>NON-REACTIVE</option><option value="REACTIVE for HIV I &amp; II">REACTIVE</option></select>
         </div>
 
         <div class="btn-row">
