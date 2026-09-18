@@ -907,14 +907,6 @@ function openDB(){
 function saveRec(rec){
   return new Promise(async(res,rej)=>{
     // Check if limit is unlocked
-    const unlocked=localStorage.getItem('_pcl_unlocked')==='true';
-    if(!unlocked){
-      const all=await getAllRecs();
-      if(all.length>=500){
-        rej(new Error('LIMIT_REACHED'));
-        return;
-      }
-    }
     const tx=db.transaction(STORE,'readwrite');
     const r=tx.objectStore(STORE).add(rec);
     r.onsuccess=()=>res(r.result);
@@ -1194,13 +1186,21 @@ function loadSeroRec(r){document.getElementById('sf-name').value=r.name;document
 /* ══ Per-tab print margin settings ══ */
 const DEFAULT_MARGINS={top:15,bottom:15,left:15,right:15};
 const TAB_DEFAULT_MARGINS={
-  sero:{top:48,bottom:80,left:26,right:26},
-  haemo:{top:48,bottom:15,left:20,right:21},
-  bs:{top:4,bottom:15,left:11,right:5},
+  sero:{top:15,bottom:15,left:14,right:12},
+  haemo:{top:15,bottom:15,left:14,right:12},
+  bs:{top:8,bottom:5,left:5,right:5},
   biochem:{top:48,bottom:15,left:23,right:23},
   crpra:{top:47,bottom:15,left:23,right:23},
   bill:{top:26,bottom:15,left:20,right:19},
 };
+
+// Apply defaults — overwrite any previously saved margins with the new defaults
+(function applyDefaultMargins(){
+  Object.entries(TAB_DEFAULT_MARGINS).forEach(([key,val])=>{
+    const lsKey='_pcl_margin_'+key;
+    localStorage.setItem(lsKey,JSON.stringify(val));
+  });
+})();
 const TAB_KEYS={
   'sero-report':'sero','haemo-report':'haemo','bs-report':'bs',
   'biochem-report':'biochem','crpra-report':'crpra','bill-report':'bill'
@@ -1294,7 +1294,7 @@ function printOnly(reportId, pageSize='A4'){
 async function seroPrint(){
   if(!requireName('sf-name'))return;
   try{await saveRec(buildSeroRec());}catch(e){if(handleSaveError(e))return;}
-  printOnly('sero-report','A4');
+  printOnly('sero-report',getTabPageSize('sero','A4'));
 }
 
 /* ══ HAEMOGRAM SYNC ══ */
@@ -2013,10 +2013,6 @@ async function importBackup(input){
 
 
 function handleSaveError(e){
-  if(e&&e.message==='LIMIT_REACHED'){
-    alert('⚠️ Record limit reached!\n\nMaximum 500 records allowed.\n\nPlease contact:\nGaurav — 8485003689');
-    return true;
-  }
   return false;
 }
 
@@ -3059,11 +3055,20 @@ function buildSettingsCards(){
 
   MARGIN_TABS.forEach(tab=>{
     const m=getMargins(tab.key+'-report');
+    const savedSize=getTabPageSize(tab.key,tab.pageSize);
     const card=document.createElement('div');
     card.className='settings-card';
     card.id='settings-card-'+tab.key;
     card.innerHTML=`
-      <div class="settings-card-title">${tab.label} <span style="font-size:.72rem;color:#718096;font-weight:400">(${tab.pageSize})</span></div>
+      <div class="settings-card-title">${tab.label}</div>
+      <div class="margin-slider-row" style="margin-bottom:8px">
+        <label>Paper Size</label>
+        <select id="ms-${tab.key}-pagesize" style="margin-left:8px;padding:2px 6px;border-radius:4px;border:1px solid #cbd5e0"
+          onchange="saveTabPageSize('${tab.key}',this.value)">
+          <option value="A4" ${savedSize==='A4'?'selected':''}>A4</option>
+          <option value="A5" ${savedSize==='A5'?'selected':''}>A5</option>
+        </select>
+      </div>
       ${['top','bottom','left','right'].map(side=>`
         <div class="margin-slider-row">
           <label>${side}</label>
@@ -3079,6 +3084,13 @@ function buildSettingsCards(){
     `;
     grid.appendChild(card);
   });
+}
+
+function saveTabPageSize(key,size){
+  localStorage.setItem('_pcl_pagesize_'+key,size);
+}
+function getTabPageSize(key,defaultSize){
+  return localStorage.getItem('_pcl_pagesize_'+key)||defaultSize;
 }
 
 function saveTabMargins(key){
