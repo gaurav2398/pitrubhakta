@@ -29,23 +29,23 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
 .sub-tab-page{display:none}.sub-tab-page.active{display:block}
 
 /* ── Workspace ── */
-.workspace{display:grid;grid-template-columns:340px 1fr;gap:22px;padding:22px 28px;max-width:1300px;margin:0 auto}
+.workspace{display:grid;grid-template-columns:420px 1fr;gap:22px;padding:22px 28px;max-width:1440px;margin:0 auto}
 
 /* ── Form panel ── */
-.form-panel{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.08);align-self:start;position:sticky;top:110px;max-height:calc(100vh - 130px);overflow-y:auto;overflow-x:visible}
-.form-panel h2{font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#1a3a5c;border-bottom:2px solid #1a3a5c;padding-bottom:6px;margin-bottom:14px;margin-top:16px}
+.form-panel{background:#fff;border-radius:10px;padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.08);align-self:start;position:sticky;top:110px;max-height:calc(100vh - 130px);overflow-y:auto;overflow-x:visible}
+.form-panel h2{font-size:.88rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#1a3a5c;border-bottom:2px solid #1a3a5c;padding-bottom:6px;margin-bottom:14px;margin-top:16px}
 .form-panel h2:first-child{margin-top:0}
-.field{margin-bottom:11px}
-.field label{display:block;font-size:.72rem;font-weight:500;color:#4a5568;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
-.field input,.field select{width:100%;padding:7px 9px;border:1.5px solid #cbd5e0;border-radius:6px;font-size:.85rem;font-family:inherit;color:#1a2332;background:#f7fafc;transition:border-color .18s}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:.82rem;font-weight:600;color:#2d3748;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select{width:100%;padding:9px 11px;border:1.5px solid #cbd5e0;border-radius:6px;font-size:1rem;font-family:inherit;color:#1a2332;background:#f7fafc;transition:border-color .18s}
 .field input:focus,.field select:focus{outline:none;border-color:#1a3a5c;background:#fff}
 .field input[readonly]{background:#edf2f7;color:#718096;cursor:default}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.result-group{background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:10px}
-.result-group h3{font-size:.72rem;font-weight:600;color:#2d3748;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+.result-group{background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:12px}
+.result-group h3{font-size:.82rem;font-weight:700;color:#2d3748;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-.btn-print,.btn-share{padding:10px;border:none;border-radius:7px;font-size:.88rem;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .18s,transform .1s}
+.btn-print,.btn-share{padding:12px;border:none;border-radius:7px;font-size:1rem;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .18s,transform .1s}
 .btn-print{background:#1a3a5c;color:#fff}.btn-print:hover{background:#254e7a}
 .btn-share{background:#16a34a;color:#fff}.btn-share:hover{background:#15803d}
 /* WBC diff counter */
@@ -245,9 +245,9 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
     <h1></h1>
   </div>
   <div class="main-tab-bar">
-    <button class="main-tab-btn active" onclick="switchMain('serology',this)">🔬 Serology</button>
-    <button class="main-tab-btn" onclick="switchMain('haemogram',this)">🩸 Haemogram</button>
+    <button class="main-tab-btn active" onclick="switchMain('haemogram',this)">🩸 Haemogram</button>
     <button class="main-tab-btn" onclick="switchMain('bloodsugar',this)">🩺 Blood Sugar</button>
+    <button class="main-tab-btn" onclick="switchMain('serology',this)">🔬 Serology</button>
     <button class="main-tab-btn" onclick="switchMain('biochem',this)">🧬 Bio-Chemistry</button>
     <button class="main-tab-btn" onclick="switchMain('crpra',this)">🧪 CRP/RA</button>
     <button class="main-tab-btn" onclick="switchMain('bill',this)">🧾 Bill</button>
@@ -260,7 +260,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
 <!-- ════════════════════════════════════════
      SEROLOGY MAIN TAB
 ════════════════════════════════════════ -->
-<div id="main-serology" class="main-tab-page active">
+<div id="main-serology" class="main-tab-page">
   <div class="sub-tab-bar">
     <button class="sub-tab-btn active" onclick="switchSub('sero','form',this)">📋 Form</button>
     <button class="sub-tab-btn" onclick="switchSub('sero','hist',this)">🕒 History</button>
@@ -381,7 +381,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
 <!-- ════════════════════════════════════════
      HAEMOGRAM MAIN TAB
 ════════════════════════════════════════ -->
-<div id="main-haemogram" class="main-tab-page">
+<div id="main-haemogram" class="main-tab-page active">
   <div class="sub-tab-bar">
     <button class="sub-tab-btn active" onclick="switchSub('haemo','form',this)">📋 Form</button>
     <button class="sub-tab-btn" onclick="switchSub('haemo','hist',this)">🕒 History</button>
@@ -440,13 +440,13 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
         <div class="result-group">
           <h3>Urine Exam</h3>
           <div class="field"><label>Albumin</label>
-            <select id="hf-alb" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="Absent">Absent</option><option value="Present">Present</option></select>
+            <select id="hf-alb" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="Absent">Absent</option><option value="Present">Present</option><option value="(+)">(+)</option><option value="(++)">(++)</option><option value="(+++)">(+++)</option></select>
           </div>
           <div class="field"><label>Sugar</label>
-            <select id="hf-usg" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="Absent">Absent</option><option value="Present">Present</option></select>
+            <select id="hf-usg" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="Absent">Absent</option><option value="Present">Present</option><option value="(+)">(+)</option><option value="(++)">(++)</option><option value="(+++)">(+++)</option></select>
           </div>
           <div class="field"><label>Microscopy</label>
-            <select id="hf-mic" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="Nil">Nil</option><option value="Normal">Normal</option><option value="Abnormal">Abnormal</option></select>
+              <textarea id="hf-mic" rows="3" placeholder="Enter microscopy findings..." oninput="haemoSync()" style="width:100%;resize:none;font-family:inherit;font-size:inherit;padding:6px 8px;border:1px solid #cbd5e0;border-radius:6px;line-height:1.5"></textarea>
           </div>
         </div>
 
@@ -470,7 +470,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
           </div>
         </div>
         <div class="field"><label>HCV Test</label>
-          <select id="hf-hcv" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="NEGATIVE" selected>NEGATIVE</option><option value="POSITIVE">POSITIVE</option></select>
+          <select id="hf-hcv" onchange="haemoSync()"><option value="" selected>-- Not tested --</option><option value="NEGATIVE">NEGATIVE</option><option value="POSITIVE">POSITIVE</option></select>
         </div>
         <div class="field"><label>Australia Antigen Test</label>
           <select id="hf-aat" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="NEGATIVE" selected>NEGATIVE</option><option value="POSITIVE">POSITIVE</option></select>
@@ -509,7 +509,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
           <div class="report-body">
             <table class="meta-table"><colgroup><col class="c-label"><col class="c-colon"><col class="c-value"><col class="c-gap"><col class="c-rlabel"><col class="c-rcolon"><col class="c-rvalue"></colgroup>
               <tr><td class="meta-label" style="white-space:nowrap">Patient's Name</td><td class="meta-colon">:</td><td class="meta-value" id="hr-name">—</td><td></td><td class="meta-label">Date</td><td class="meta-colon">:</td><td class="meta-value" id="hr-date">—</td></tr>
-              <tr><td class="meta-label">Reference By</td><td class="meta-colon">:</td><td class="meta-value" id="hr-ref">—</td><td></td><td class="meta-label">Sex</td><td class="meta-colon">:</td><td class="meta-value" id="hr-sex">Male</td></tr>
+              <tr><td class="meta-label">Reference By</td><td class="meta-colon">:</td><td class="meta-value" id="hr-ref">—</td><td colspan="4"></td></tr>
             </table>
             <hr class="report-hr">
             <div class="report-title">Haemogram</div>
@@ -721,7 +721,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
 
 <style>
 /* ── Blood Sugar Report — original header + Option B data ── */
-.bs-report{max-width:560px;font-size:9.5pt;font-family:'Source Serif 4','Times New Roman',serif;line-height:1.35}
+.bs-report{max-width:560px;font-size:10.5pt;font-family:'Source Serif 4','Times New Roman',serif;line-height:1.35}
 .bs-lab-header{background:linear-gradient(180deg,#c8e6e4 0%,#a8d5d3 55%,#fff 55%)}
 .bs-header-top{padding:10px 14px 0 10px;gap:8px}
 .bs-micro{width:58px;height:58px}
@@ -732,10 +732,10 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
 /* Body */
 .bs-body{padding:8px 20px 12px;}
 .bs-meta-table{width:100%;border-collapse:collapse;margin-bottom:8px;table-layout:fixed}
-.bs-meta-table td{padding:3px 0;font-size:11pt;vertical-align:baseline}
+.bs-meta-table td{padding:2px 0;font-size:9.5pt;vertical-align:baseline}
 .bs-meta-label{font-weight:400;color:#333;white-space:nowrap;width:55px}
 .bs-meta-colon{width:12px;padding:0 3px;color:#333}
-.bs-meta-value{font-weight:700}
+.bs-meta-value{font-weight:700;font-size:9.5pt}
 .bs-meta-right{text-align:right;white-space:nowrap}
 .bs-meta-right .bs-meta-label{display:inline;width:auto}
 .bs-meta-right .bs-meta-colon{display:inline;padding:0 4px}
@@ -1191,7 +1191,7 @@ const TAB_DEFAULT_MARGINS={
   bs:{top:4,bottom:15,left:11,right:5},
   biochem:{top:48,bottom:15,left:23,right:23},
   crpra:{top:47,bottom:15,left:23,right:23},
-  bill:{top:26,bottom:15,left:20,right:19},
+  bill:{top:48,bottom:15,left:20,right:19},
 };
 
 // Apply defaults — overwrite any previously saved margins with the new defaults
@@ -1225,6 +1225,8 @@ function printOnly(reportId, pageSize='A4'){
   _printStyle.textContent=`
     @media print {
       @page { size:${pageSize}; margin:0; }
+      /* Suppress browser print header/footer URL */
+      html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       body { margin:0!important; padding:0!important; }
       body > *:not(.print-target-wrap) { display:none !important; }
       .print-target-wrap {
@@ -1300,13 +1302,16 @@ async function seroPrint(){
 }
 
 /* ══ HAEMOGRAM SYNC ══ */
-function hv(id){return document.getElementById(id).value.trim();}
+function hv(id){
+  const el=document.getElementById(id);
+  if(!el) return '';
+  return el.value.trim();
+}
 
 function haemoSync(){
   document.getElementById('hr-name').textContent=hv('hf-name')||'—';
   autoShrinkName('hr-name');
   document.getElementById('hr-ref').textContent=hv('hf-ref')||'—';
-  document.getElementById('hr-sex').textContent=document.getElementById('hf-sex').value;
   document.getElementById('hr-date').textContent=(document.getElementById('hf-date')?.value)||today;
 
   let html='';
@@ -1376,7 +1381,10 @@ function haemoSync(){
 
   // Blood Sugar
   if(hv('hf-sugar')){
-    html+=line('Blood Sugar (Random)', hv('hf-sugar')+' mg/dl', '70-140 mg/dl', {underline:true});
+    const sugarRaw=parseFloat(hv('hf-sugar'));
+    const sugarVal=isNaN(sugarRaw)?hv('hf-sugar'):sugarRaw.toFixed(1);
+    html+=`<div style="height:8px"></div>`;
+    html+=line('Blood Sugar (Random)', sugarVal+' mg/dl', '70-140 mg/dl', {underline:true});
   }
 
   // Urine Exam
@@ -1387,7 +1395,11 @@ function haemoSync(){
       <span style="flex:1">
         ${alb?`<div style="display:flex"><span style="width:90px">Albumin</span><span style="width:14px">:</span><span>${alb}</span></div>`:''}
         ${usg?`<div style="display:flex"><span style="width:90px">Sugar</span><span style="width:14px">:</span><span>${usg}</span></div>`:''}
-        ${mic?`<div style="display:flex"><span style="width:90px">Microscopy</span><span style="width:14px">:</span><span>${mic}</span></div>`:''}
+        ${mic?`<div style="display:flex;font-size:11pt;padding:1px 0;line-height:1.5">
+          <span style="width:90px;flex-shrink:0">Microscopy</span>
+          <span style="width:14px;flex-shrink:0">:</span>
+          <span style="white-space:pre-line;flex:1">${mic}</span>
+        </div>`:''}
       </span>
     </div>`;
   }
