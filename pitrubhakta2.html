@@ -241,7 +241,9 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
 
 <header class="app-header">
   <div class="app-header-left">
-    <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#fff" fill-opacity=".12"/><path d="M8 10h16M8 16h10M8 22h13" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+    <a href="https://share.google/xzanhNS0bLS9xpeQw" target="_blank" rel="noopener noreferrer" title="About Developer" style="display:flex;align-items:center;color:#fff;text-decoration:none">
+      <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#fff" fill-opacity=".12"/><path d="M8 10h16M8 16h10M8 22h13" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+    </a>
     <h1></h1>
   </div>
   <div class="main-tab-bar">
@@ -255,6 +257,9 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
     <button class="main-tab-btn" onclick="switchMain('settings',this)" id="settings-tab-btn">⚙️ Settings</button>
     <button class="main-tab-btn" onclick="switchMain('templates',this)" style="display:none">✏️ Templates</button>
   </div>
+  <a href="https://share.google/xzanhNS0bLS9xpeQw" target="_blank" rel="noopener noreferrer"
+     title="About Developer"
+     style="display:none"></a>
 </header>
 
 <!-- ════════════════════════════════════════
@@ -400,11 +405,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
         </div>
         <div class="field-row">
           <div class="field" style="display:none"><label>Date</label><input type="text" id="hf-date" readonly></div>
-          <div class="field"><label>Sex</label>
-            <select id="hf-sex" onchange="haemoSync();updateESRHint()">
-              <option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option>
-            </select>
-          </div>
+          <div style="display:none"><select id="hf-sex"><option value="Male">Male</option><option value="Female">Female</option></select></div>
         </div>
         <div class="field"><label>Ref. By Dr.</label>
           <input type="text" id="hf-ref" list="href-options" placeholder="Select or type..." value="Sharda Netralay" oninput="haemoSync()">
@@ -440,13 +441,13 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
         <div class="result-group">
           <h3>Urine Exam</h3>
           <div class="field"><label>Albumin</label>
-            <select id="hf-alb" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="Absent">Absent</option><option value="Present">Present</option><option value="(+)">(+)</option><option value="(++)">(++)</option><option value="(+++)">(+++)</option></select>
+            <select id="hf-alb" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="Absent" selected>Absent</option><option value="Present (Trace)">Present (Trace)</option><option value="(+)">(+)</option><option value="(++)">(++)</option><option value="(+++)">(+++)</option><option value="(++++)">(++++)</option></select>
           </div>
           <div class="field"><label>Sugar</label>
-            <select id="hf-usg" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="Absent">Absent</option><option value="Present">Present</option><option value="(+)">(+)</option><option value="(++)">(++)</option><option value="(+++)">(+++)</option></select>
+            <select id="hf-usg" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="Absent" selected>Absent</option><option value="Present (Trace)">Present (Trace)</option><option value="(+)">(+)</option><option value="(++)">(++)</option><option value="(+++)">(+++)</option><option value="(++++)">(++++)</option></select>
           </div>
           <div class="field"><label>Microscopy</label>
-              <textarea id="hf-mic" rows="3" placeholder="Enter microscopy findings..." oninput="haemoSync()" style="width:100%;resize:none;font-family:inherit;font-size:inherit;padding:6px 8px;border:1px solid #cbd5e0;border-radius:6px;line-height:1.5"></textarea>
+              <textarea id="hf-mic" rows="3" placeholder="Nil" oninput="haemoSync()" style="width:100%;resize:none;font-family:inherit;font-size:inherit;padding:6px 8px;border:1px solid #cbd5e0;border-radius:6px;line-height:1.5"></textarea>
           </div>
         </div>
 
@@ -732,10 +733,10 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
 /* Body */
 .bs-body{padding:8px 20px 12px;}
 .bs-meta-table{width:100%;border-collapse:collapse;margin-bottom:8px;table-layout:fixed}
-.bs-meta-table td{padding:2px 0;font-size:9.5pt;vertical-align:baseline}
-.bs-meta-label{font-weight:400;color:#333;white-space:nowrap;width:55px}
+.bs-meta-table td{padding:2px 0;font-size:11pt;vertical-align:baseline}
+.bs-meta-label{font-weight:400;color:#333;white-space:nowrap;width:55px;font-size:11pt}
 .bs-meta-colon{width:12px;padding:0 3px;color:#333}
-.bs-meta-value{font-weight:700;font-size:9.5pt}
+.bs-meta-value{font-weight:700;font-size:11pt}
 .bs-meta-right{text-align:right;white-space:nowrap}
 .bs-meta-right .bs-meta-label{display:inline;width:auto}
 .bs-meta-right .bs-meta-colon{display:inline;padding:0 4px}
@@ -744,7 +745,7 @@ body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:
 .bs-hr-thin{border:none;border-top:1px solid #bbb;margin:2px 0 6px}
 
 /* Title */
-.bs-report-title{text-align:center;font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-decoration:underline;text-underline-offset:5px;margin-bottom:5px}
+.bs-report-title{text-align:center;font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-decoration:underline;text-underline-offset:5px;margin-bottom:5px;margin-top:2.5em}
 
 /* Test header */
 .bs-test-header{font-weight:700;font-size:10.5pt;font-family:'Source Serif 4','Times New Roman',serif;padding:3px 2px;border-top:2px solid #1a1a2e;border-bottom:2px solid #1a1a2e;margin-bottom:12px;text-align:left}
@@ -795,7 +796,7 @@ function fmtBSL(v){
 
 function bsSync(){
   document.getElementById('bsr-name').textContent=toTitleCase(bsf('bsf-name'))||'—';autoShrinkName('bsr-name');
-  document.getElementById('bsr-ref').textContent=bsf('bsf-ref')||'—';
+  document.getElementById('bsr-ref').textContent='     '+(bsf('bsf-ref')||'—');
   document.getElementById('bsr-sex').textContent=document.getElementById('bsf-sex').value;
   document.getElementById('bsr-date').textContent=(document.getElementById('bsf-date')?.value)||today;
 
@@ -1188,7 +1189,7 @@ const DEFAULT_MARGINS={top:15,bottom:15,left:15,right:15};
 const TAB_DEFAULT_MARGINS={
   sero:{top:48,bottom:0,left:8,right:8},
   haemo:{top:48,bottom:0,left:7,right:7},
-  bs:{top:4,bottom:15,left:11,right:5},
+  bs:{top:48,bottom:15,left:11,right:5},
   biochem:{top:48,bottom:15,left:23,right:23},
   crpra:{top:47,bottom:15,left:23,right:23},
   bill:{top:48,bottom:15,left:20,right:19},
