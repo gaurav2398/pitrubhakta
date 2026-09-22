@@ -1,0 +1,3395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Source+Serif+4:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1a2332;min-height:100vh}
+
+/* ── App bar ── */
+.app-header{background:#1a3a5c;color:#fff;padding:12px 28px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:200}
+.app-header-left{display:flex;align-items:center;gap:10px}
+.app-header h1{font-size:1rem;font-weight:600}
+
+/* ── Main tabs ── */
+.main-tab-bar{display:flex;gap:3px;background:rgba(255,255,255,.12);padding:3px;border-radius:8px}
+.main-tab-btn{padding:6px 16px;border:none;border-radius:5px;font-size:.82rem;font-weight:600;font-family:inherit;cursor:pointer;background:transparent;color:rgba(255,255,255,.7);transition:all .18s}
+.main-tab-btn.active{background:#fff;color:#1a3a5c}
+.main-tab-btn:hover:not(.active){background:rgba(255,255,255,.18);color:#fff}
+.main-tab-page{display:none}.main-tab-page.active{display:block}
+
+/* ── Sub tabs ── */
+.sub-tab-bar{display:flex;gap:2px;padding:16px 28px 0;border-bottom:2px solid #e2e8f0;background:#fff}
+.sub-tab-btn{padding:8px 20px;border:none;border-bottom:3px solid transparent;font-size:.83rem;font-weight:600;font-family:inherit;cursor:pointer;background:transparent;color:#718096;margin-bottom:-2px;transition:all .18s;border-radius:4px 4px 0 0}
+.sub-tab-btn.active{color:#1a3a5c;border-bottom-color:#1a3a5c;background:#f0f4f8}
+.sub-tab-btn:hover:not(.active){color:#1a3a5c;background:#f0f4f8}
+.sub-tab-page{display:none}.sub-tab-page.active{display:block}
+
+/* ── Workspace ── */
+.workspace{display:grid;grid-template-columns:420px 1fr;gap:22px;padding:22px 28px;max-width:1440px;margin:0 auto}
+
+/* ── Form panel ── */
+.form-panel{background:#fff;border-radius:10px;padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.08);align-self:start;position:sticky;top:110px;max-height:calc(100vh - 130px);overflow-y:auto;overflow-x:visible}
+.form-panel h2{font-size:.88rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#1a3a5c;border-bottom:2px solid #1a3a5c;padding-bottom:6px;margin-bottom:14px;margin-top:16px}
+.form-panel h2:first-child{margin-top:0}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:.82rem;font-weight:600;color:#2d3748;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select{width:100%;padding:9px 11px;border:1.5px solid #cbd5e0;border-radius:6px;font-size:1rem;font-family:inherit;color:#1a2332;background:#f7fafc;transition:border-color .18s}
+.field input:focus,.field select:focus{outline:none;border-color:#1a3a5c;background:#fff}
+.field input[readonly]{background:#edf2f7;color:#718096;cursor:default}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.result-group{background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:12px}
+.result-group h3{font-size:.82rem;font-weight:700;color:#2d3748;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.btn-print,.btn-share{padding:12px;border:none;border-radius:7px;font-size:1rem;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .18s,transform .1s}
+.btn-print{background:#1a3a5c;color:#fff}.btn-print:hover{background:#254e7a}
+.btn-share{background:#16a34a;color:#fff}.btn-share:hover{background:#15803d}
+/* WBC diff counter */
+.diff-counter{font-size:.78rem;font-weight:600;margin-top:6px;padding:6px 10px;border-radius:6px;text-align:center;transition:all .2s}
+.diff-counter.ok{background:#dcfce7;color:#15803d}
+.diff-counter.warn{background:#fef3c7;color:#92400e}
+.diff-counter.over{background:#fee2e2;color:#dc2626}
+.diff-input-error{border-color:#dc2626!important;background:#fff5f5!important}
+.btn-print:active,.btn-share:active{transform:scale(.97)}
+.name-wrap{position:relative}
+.name-suggestions{position:fixed;z-index:9999;background:#fff;border:1.5px solid #1a3a5c;border-top:none;border-radius:0 0 6px 6px;max-height:180px;overflow-y:auto;box-shadow:0 6px 16px rgba(0,0,0,.15);display:none;min-width:200px}
+.name-suggestions.open{display:block}
+.sug-item{padding:7px 12px;font-size:.85rem;cursor:pointer;border-bottom:1px solid #f0f4f8;display:flex;justify-content:space-between;align-items:center}
+.sug-item:hover{background:#eef3f8}
+.sug-meta{font-size:.7rem;color:#718096}
+
+/* ── Preview panel ── */
+.preview-panel{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.preview-panel>h2{font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#1a3a5c;border-bottom:2px solid #1a3a5c;padding-bottom:6px;margin-bottom:14px}
+.report-scaler{width:100%;overflow-x:auto}
+
+/* ══ REPORT (shared by both Serology & Haemogram) ══ */
+.report{font-family:'Source Serif 4','Times New Roman',serif;font-size:12pt;color:#1a1a2e;background:#fff;width:100%;max-width:740px;margin:0 auto;border:1px solid #dde3ec;line-height:1.55}
+.lab-header{background:linear-gradient(180deg,#c8e6e4 0%,#a8d5d3 55%,#fff 55%);border-bottom:3px solid #3a5a8c}
+.lab-header-top{display:flex;align-items:center;padding:12px 18px 0 12px;gap:10px}
+.microscope-circle{width:76px;height:76px;flex-shrink:0;border-radius:50%;background:#fff;border:3px solid #3a5a8c;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.microscope-circle svg{width:52px;height:52px}
+.lab-title-block{flex:1;text-align:center;padding-bottom:4px}
+.lab-name{font-family:'Cinzel',serif;font-size:20pt;font-weight:900;color:#2d3a6e;letter-spacing:.04em;line-height:1.1;text-shadow:1px 1px 0 rgba(255,255,255,.6)}
+.lab-sub{font-family:'Cinzel',serif;font-size:10pt;color:#b03070;font-weight:700;letter-spacing:.12em;margin-top:2px}
+.lab-header-bottom{background:#fff;display:flex;justify-content:space-between;align-items:flex-start;padding:5px 18px;font-family:'Inter',sans-serif}
+.lab-address{font-size:8.5pt;color:#333;line-height:1.6}
+.lab-address .phone{display:flex;align-items:center;gap:4px}
+.lab-doctor{font-size:8.5pt;color:#b03070;text-align:right;line-height:1.7;font-weight:600}
+.lab-doctor .reg{color:#444;font-weight:400}
+.report-body{padding:8px 22px 18px;flex:1}
+.report-hr{border:none;border-top:2.5px solid #2d3a6e;margin:6px 0 10px}
+.report-title{text-align:center;font-size:13pt;font-weight:700;text-decoration:underline;text-underline-offset:5px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.lab-footer{margin-top:8px;font-family:'Inter',sans-serif}
+.footer-ornament{text-align:center;font-size:16pt;color:#3a5a8c;line-height:1;margin-bottom:-4px}
+.footer-bar{background:linear-gradient(180deg,#6aabaa 0%,#3a8a88 100%);border-top:2px solid #2d6a68;padding:8px 22px;text-align:center}
+.footer-text{font-size:9pt;color:#fff;line-height:1.55;font-style:italic}
+
+/* ── Meta table (patient info) ── */
+.meta-table{width:100%;border-collapse:collapse;margin-bottom:5px;table-layout:fixed}
+.meta-table td{padding:3px 0;font-size:11pt;vertical-align:top;overflow:hidden}
+.meta-table col.c-label{width:112px}.meta-table col.c-colon{width:14px}.meta-table col.c-value{width:auto}
+.meta-table col.c-gap{width:40px}.meta-table col.c-rlabel{width:46px}.meta-table col.c-rcolon{width:14px}.meta-table col.c-rvalue{width:110px}
+.meta-label{font-weight:400;color:#333;white-space:nowrap}.meta-value{font-weight:700}.meta-colon{padding:0 3px 0 2px;color:#333}
+
+/* ── Serology report styles ── */
+.col-headers{display:flex;justify-content:space-between;font-weight:700;font-size:11.5pt;text-decoration:underline;margin-bottom:14px}
+.test-entry{margin-bottom:16px}
+.test-row{display:flex;justify-content:space-between;align-items:baseline}
+.test-name{font-weight:700;font-size:12pt}
+.test-result{font-weight:400;font-size:12pt}
+.test-result.result-positive{font-weight:700;border:2.5px solid #1a1a2e;padding:2px 12px;display:inline-block}
+.test-method{font-size:10.5pt;margin-top:2px;margin-left:2px}
+.test-note{font-size:10.5pt;margin-top:5px;line-height:1.65}
+.test-note strong{font-weight:700}
+/* Report body */
+.report{position:relative}
+.report-body{padding:8px 28px 20px!important;}
+.signature-area{
+  margin-top:30px;
+  text-align:right;
+  font-size:11.5pt;
+  font-weight:600;
+  padding-right:2cm;
+}
+
+/* ── Haemogram report styles ── */
+.haemo-col-headers{display:flex;font-weight:700;font-size:10.5pt;margin-bottom:6px}
+.haemo-col-headers span{text-decoration:underline;text-underline-offset:3px;font-weight:700}
+.haemo-col-headers span:nth-child(1){flex:0 0 40%}
+.haemo-col-headers span:nth-child(2){flex:0 0 20%}
+.haemo-col-headers span:nth-child(3){flex:1}
+
+.hr-row{display:flex;align-items:baseline;font-size:10.5pt;padding:2px 0;line-height:1.45}
+.hr-row.hr-gap{height:10px;display:block;padding:0}
+.hr-row.hr-diff{padding:1px 0}
+.hr-label{flex:0 0 40%;font-weight:700;white-space:nowrap;overflow:hidden;font-size:10.5pt}
+.hr-label.hr-indent{font-weight:400;padding-left:18px}
+.hr-result{flex:0 0 20%;font-weight:400;font-size:10.5pt;white-space:nowrap}
+.hr-range{flex:1;font-weight:400;font-size:10.5pt;color:#333;word-break:break-word}
+.hr-section{font-weight:700;font-size:10.5pt;padding:3px 0 1px}
+
+.haemo-footer-row{margin-top:48px;display:flex;justify-content:space-between;align-items:flex-end;font-size:11pt;padding-top:8px}
+.haemo-thanks{font-style:italic;color:#444}
+.haemo-sig{font-weight:600}
+
+/* ── Report body side padding (data only, not header/footer) ── */
+.report-body{padding:8px 28px 18px!important;flex:1;display:flex;flex-direction:column}
+.bs-body{padding:6px 22px 14px!important}
+
+/* ══ HISTORY TABLE ══ */
+.history-page{padding:22px 28px;max-width:1300px;margin:0 auto}
+.history-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.history-header h2{font-size:1rem;font-weight:600;color:#1a3a5c}
+.history-search{padding:7px 12px;border:1.5px solid #cbd5e0;border-radius:8px;font-size:.85rem;font-family:inherit;width:240px}
+.history-search:focus{outline:none;border-color:#1a3a5c}
+.history-stats{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.stat-card{background:#fff;border-radius:8px;padding:12px 18px;box-shadow:0 1px 4px rgba(0,0,0,.07);flex:1;text-align:center;min-width:100px}
+.stat-card .stat-num{font-size:1.5rem;font-weight:700;color:#1a3a5c}
+.stat-card .stat-label{font-size:.72rem;color:#718096;margin-top:2px}
+.stat-card-filtered{border:1.5px solid #1a3a5c!important;background:#f0f4f8!important}
+.history-table-wrap{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;overflow-x:auto}
+.history-table{width:100%;border-collapse:collapse;min-width:700px}
+.history-table th{background:#1a3a5c;color:#fff;padding:10px 12px;text-align:left;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.history-table td{padding:9px 12px;font-size:.84rem;border-bottom:1px solid #f0f4f8;vertical-align:middle}
+.history-table tr:last-child td{border-bottom:none}
+.history-table tr:hover td{background:#f7fbff}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600;text-transform:uppercase}
+.badge-neg{background:#dcfce7;color:#15803d}.badge-pos{background:#fee2e2;color:#dc2626;border:1.5px solid #dc2626}
+.badge-nrx{background:#dbeafe;color:#1d4ed8}.badge-rx{background:#fee2e2;color:#dc2626;border:1.5px solid #dc2626}
+.badge-sero{background:#e0e7ff;color:#3730a3}.badge-haemo{background:#fef3c7;color:#92400e}
+.btn-load{padding:4px 10px;background:#1a3a5c;color:#fff;border:none;border-radius:5px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s}
+.btn-load:hover{background:#254e7a}
+.btn-del{padding:4px 8px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:5px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;margin-left:5px}
+.btn-del:hover{background:#fecaca}
+.empty-history{text-align:center;padding:44px;color:#a0aec0;font-size:.9rem}
+
+/* ── History filter bar ── */
+.filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:flex-end;background:#f7fafc;padding:12px 14px;border-radius:8px;border:1px solid #e2e8f0}
+.filter-group{display:flex;flex-direction:column;gap:3px}
+.filter-group label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#718096}
+.filter-select,.filter-date{padding:6px 10px;border:1.5px solid #cbd5e0;border-radius:6px;font-size:.8rem;font-family:inherit;color:#1a2332;background:#fff;cursor:pointer}
+.filter-select:focus,.filter-date:focus{outline:none;border-color:#1a3a5c}
+.btn-clear-filters{padding:6px 14px;background:#fff;border:1.5px solid #cbd5e0;border-radius:6px;font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;color:#4a5568;align-self:flex-end;transition:all .15s}
+.btn-clear-filters:hover{background:#fee2e2;border-color:#fca5a5;color:#dc2626}
+.filter-results-count{font-size:.75rem;color:#1a3a5c;font-weight:600;align-self:center;margin-left:auto}
+/* Backup/Restore buttons */
+.backup-btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn-backup{padding:7px 14px;background:#1a3a5c;color:#fff;border:none;border-radius:6px;font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;transition:background .15s;white-space:nowrap}
+.btn-backup:hover{background:#254e7a}
+.btn-restore{padding:7px 14px;background:#fff;color:#1a3a5c;border:1.5px solid #1a3a5c;border-radius:6px;font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-restore:hover{background:#eef3f8}
+
+/* ── Force correct bold rendering on print ── */
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  b,strong{font-weight:900!important;-webkit-text-stroke:0.5px currentColor}
+  .haemo-label b,.test-name,.report-title,.col-headers span,
+  .bc-col-headers span,.crpra-col-headers span,.meta-value,
+  .bill-lab-name,.bill-amount-due span,.bs-report-title,
+  .haemo-section,.lab-name{font-weight:900!important;-webkit-text-stroke:0.5px currentColor}
+}
+
+/* ── Templates page ── */
+.templates-page{padding:22px 28px;max-width:1200px;margin:0 auto}
+.tpl-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:14px;flex-wrap:wrap}
+.tpl-header h2{font-size:1rem;font-weight:600;color:#1a3a5c;margin-bottom:3px}
+.tpl-header p{font-size:.8rem;color:#718096}
+.btn-tpl-save{padding:9px 20px;background:#1a3a5c;color:#fff;border:none;border-radius:8px;font-size:.88rem;font-weight:600;font-family:inherit;cursor:pointer;transition:background .18s;white-space:nowrap}
+.btn-tpl-save:hover{background:#254e7a}
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.tpl-card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.08);border-top:4px solid #1a3a5c}
+.tpl-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.tpl-test{font-size:.83rem;font-weight:600;color:#2d3748}
+.tpl-field{margin-bottom:10px}
+.tpl-field label{display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#4a5568;margin-bottom:4px}
+.tpl-field input,.tpl-field textarea{width:100%;padding:7px 9px;border:1.5px solid #cbd5e0;border-radius:6px;font-size:.84rem;font-family:inherit;color:#1a2332;background:#f7fafc;resize:vertical}
+.tpl-field input:focus,.tpl-field textarea:focus{outline:none;border-color:#1a3a5c;background:#fff}
+.tpl-saved-msg{margin-top:16px;padding:10px 18px;background:#dcfce7;color:#15803d;border-radius:8px;font-weight:600;font-size:.88rem;text-align:center}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .workspace{grid-template-columns:1fr;padding:14px}
+  .form-panel{position:static;top:0;max-height:none}
+  .preview-panel{padding:12px 8px}
+  .report{font-size:8.5pt;min-width:500px}
+  .lab-name{font-size:13pt}
+  .history-page{padding:14px}
+  .tpl-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){.field-row,.field-row3{grid-template-columns:1fr}.main-tab-btn{padding:5px 10px;font-size:.75rem}}
+
+/* ── PRINT ── */
+@media print{
+  @page{size:A4;margin:0}
+  body{background:#fff!important}
+  .app-header,.form-panel,.preview-panel>h2,.main-tab-bar,.sub-tab-bar{display:none!important}
+  .main-tab-page,.sub-tab-page{display:block!important}
+  .workspace{display:block;padding:0;max-width:none}
+  .preview-panel{box-shadow:none;border-radius:0;padding:0}
+  .report{border:none;max-width:none;width:100%;min-height:100vh;font-size:11pt}
+  .lab-name{font-size:18pt}
+  .haemo-row.no-print{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-left">
+    <button onclick="document.getElementById('dev-popup-overlay').classList.add('dev-open')" title="About Developer" style="display:flex;align-items:center;background:none;border:none;cursor:pointer;padding:0;color:#fff">
+      <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#fff" fill-opacity=".12"/><path d="M8 10h16M8 16h10M8 22h13" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <h1></h1>
+  </div>
+  <div class="main-tab-bar">
+    <button class="main-tab-btn active" onclick="switchMain('haemogram',this)">🩸 Haemogram</button>
+    <button class="main-tab-btn" onclick="switchMain('bloodsugar',this)">🩺 Blood Sugar</button>
+    <button class="main-tab-btn" onclick="switchMain('serology',this)">🔬 Serology</button>
+    <button class="main-tab-btn" onclick="switchMain('biochem',this)">🧬 Bio-Chemistry</button>
+    <button class="main-tab-btn" onclick="switchMain('crpra',this)">🧪 CRP/RA</button>
+    <button class="main-tab-btn" onclick="switchMain('bill',this)">🧾 Bill</button>
+    <button class="main-tab-btn" onclick="switchMain('allhistory',this)">📊 History</button>
+    <button class="main-tab-btn" onclick="switchMain('settings',this)" id="settings-tab-btn">⚙️ Settings</button>
+    <button class="main-tab-btn" onclick="switchMain('templates',this)" style="display:none">✏️ Templates</button>
+  </div>
+  <a href="https://share.google/xzanhNS0bLS9xpeQw" target="_blank" rel="noopener noreferrer"
+     title="About Developer"
+     style="display:none"></a>
+</header>
+
+<!-- ════ DEVELOPER INFO POPUP ════ -->
+<style>
+.dev-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:99999}
+.dev-overlay.dev-open{display:flex}
+.dev-popup{background:#fff;border-radius:14px;width:300px;max-width:92vw;overflow:hidden;box-shadow:0 8px 36px rgba(0,0,0,.22);position:relative;animation:devPop .22s ease}
+@keyframes devPop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.dev-popup .dev-close{position:absolute;top:10px;right:12px;background:rgba(255,255,255,.28);border:none;font-size:1rem;cursor:pointer;color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;z-index:1}
+.dev-popup .dev-close:hover{background:rgba(255,255,255,.45)}
+.dev-head{background:#2d7d6e;padding:20px 20px 16px;color:#fff}
+.dev-head .dev-tag{font-size:.67rem;letter-spacing:.1em;opacity:.75;margin-bottom:4px;font-weight:500}
+.dev-head .dev-name{font-size:1.15rem;font-weight:700}
+.dev-body{padding:18px 20px 20px}
+.dev-field{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+.dev-field:last-of-type{margin-bottom:0}
+.dev-ico{width:34px;height:34px;border-radius:8px;background:#e8f5f3;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.dev-flbl{font-size:.68rem;color:#9aaabb;margin-bottom:2px;font-weight:500}
+.dev-fval{font-size:.9rem;color:#1a2332;font-weight:700}
+.dev-ok{width:100%;margin-top:16px;padding:10px;background:#2d7d6e;color:#fff;border:none;border-radius:8px;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s}
+.dev-ok:hover{background:#236058}
+</style>
+
+<div class="dev-overlay" id="dev-popup-overlay" onclick="if(event.target===this)this.classList.remove('dev-open')">
+  <div class="dev-popup">
+    <button class="dev-close" onclick="document.getElementById('dev-popup-overlay').classList.remove('dev-open')">✕</button>
+    <div class="dev-head">
+      <div class="dev-name">WebApp Developers</div>
+    </div>
+    <div class="dev-body">
+      <div class="dev-field">
+        <div class="dev-ico">🧑</div>
+        <div><div class="dev-flbl">Name</div><div class="dev-fval">Gaurav</div></div>
+      </div>
+      <div class="dev-field">
+        <div class="dev-ico">📞</div>
+        <div><div class="dev-flbl">Contact Number</div><div class="dev-fval">8485003689</div></div>
+      </div>
+      <button class="dev-ok" onclick="document.getElementById('dev-popup-overlay').classList.remove('dev-open')">OK</button>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('dev-popup-overlay').classList.remove('dev-open');});
+</script>
+
+<!-- ════════════════════════════════════════
+     SEROLOGY MAIN TAB
+════════════════════════════════════════ -->
+<div id="main-serology" class="main-tab-page">
+  <div class="sub-tab-bar">
+    <button class="sub-tab-btn active" onclick="switchSub('sero','form',this)">📋 Form</button>
+    <button class="sub-tab-btn" onclick="switchSub('sero','hist',this)">🕒 History</button>
+  </div>
+
+  <!-- Serology Form -->
+  <div id="sero-form" class="sub-tab-page active">
+    <div class="workspace">
+      <aside class="form-panel">
+        <h2>Patient Details</h2>
+        <div class="field"><label>Patient Name</label>
+          <div class="name-wrap">
+            <input type="text" id="sf-name" placeholder="Enter name" autocomplete="off" oninput="seroSync();showSug('sf-name','sero-sug','sero')" onblur="hideSug('sero-sug')">
+            <div class="name-suggestions" id="sero-sug"></div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="display:none"><label>Date</label><input type="text" id="sf-date" readonly></div>
+          <div class="field"><label>Sex</label>
+            <select id="sf-sex" onchange="seroSync()">
+              <option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Ref. By Dr.</label>
+          <input type="text" id="sf-ref" list="sref-options" placeholder="Select or type..." value="Sharda Netralay" oninput="seroSync()">
+          <datalist id="sref-options"><option value="None"><option value="Self"><option value="Sharda Netralay"></datalist>
+        </div>
+
+        <h2>Test Results</h2>
+        <div class="result-group">
+          <h3>1) HBsAg Antibody</h3>
+          <div class="field"><label>Result</label>
+            <select id="sf-hbsag" onchange="seroSync()"><option value="NEGATIVE">NEGATIVE</option><option value="POSITIVE">POSITIVE</option><option value="NOT_TESTED" selected>Not Tested</option></select>
+          </div>
+        </div>
+        <div class="result-group">
+          <h3>2) HIV Antibody (HIV-1 &amp; HIV-2)</h3>
+          <div class="field"><label>Result</label>
+            <select id="sf-hiv" onchange="seroSync()">
+              <option value="NON-REACTIVE for HIV I &amp; II">NON-REACTIVE</option>
+              <option value="REACTIVE for HIV-I &amp; NON-REACTIVE For HIV-II">REACTIVE for HIV-I &amp; NON-REACTIVE For HIV-II</option>
+              <option value="REACTIVE for HIV II &amp; NON-REACTIVE for HIV I">REACTIVE for HIV II &amp; NON-REACTIVE for HIV I</option>
+              <option value="REACTIVE for HIV I &amp; II">REACTIVE for HIV I &amp; II</option>
+              <option value="NOT_TESTED" selected>Not Tested</option>
+            </select>
+          </div>
+        </div>
+        <div class="result-group">
+          <h3>3) HCV Test</h3>
+          <div class="field"><label>Result</label>
+            <select id="sf-hcv" onchange="seroSync()"><option value="NEGATIVE">NEGATIVE</option><option value="POSITIVE">POSITIVE</option><option value="NOT_TESTED" selected>Not Tested</option></select>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-print" onclick="seroPrint()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print
+          </button>
+          <button class="btn-share" id="sero-share-btn" onclick="seroShare()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share
+          </button>
+        </div>
+      </aside>
+      <main class="preview-panel">
+        <h2>Live Preview</h2>
+        <div class="report-scaler"><div class="report" id="sero-report">
+          <!-- LAB HEADER -->
+          <div class="lab-header">
+            <div class="lab-header-top">
+              <div class="microscope-circle">
+                <svg viewBox="0 0 100 100" fill="none"><rect x="44" y="8" width="12" height="22" rx="4" fill="#2d3a6e"/><rect x="40" y="28" width="20" height="8" rx="3" fill="#2d3a6e"/><rect x="44" y="34" width="12" height="28" rx="3" fill="#3a4a80"/><rect x="46" y="60" width="8" height="14" rx="3" fill="#2d3a6e"/><rect x="28" y="72" width="44" height="6" rx="3" fill="#3a5a8c"/><ellipse cx="50" cy="88" rx="26" ry="6" fill="#2d3a6e"/><rect x="38" y="36" width="8" height="40" rx="3" fill="#4a6aa0"/><ellipse cx="34" cy="55" rx="7" ry="5" fill="#5a7ab0"/><ellipse cx="34" cy="67" rx="5" ry="4" fill="#7a9ac0"/></svg>
+              </div>
+              <div class="lab-title-block"><div class="lab-name"></div><div class="lab-sub">Computerised</div></div>
+            </div>
+            <div class="lab-header-bottom">
+              <div class="lab-address">117/B, Income Tax Colony, Infront of Sharda Netralay,<br>Nakane Road, Deopur, Dhule- 424002<br><span class="phone"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/></svg>: 9422707425</span></div>
+              <div class="lab-doctor">Mrs. Manjusha P. Pitrubhakta<br>B.Sc.,D.M.L.T. (Pune)<br><span class="reg">Reg. No.: PGD/MLT/0005/2021</span></div>
+            </div>
+          </div>
+          <!-- BODY -->
+          <div class="report-body">
+            <table class="meta-table"><colgroup><col class="c-label"><col class="c-colon"><col class="c-value"><col class="c-gap"><col class="c-rlabel"><col class="c-rcolon"><col class="c-rvalue"></colgroup>
+              <tr><td class="meta-label">Patient's Name</td><td class="meta-colon">:</td><td class="meta-value" id="sr-name">—</td><td></td><td class="meta-label">Date</td><td class="meta-colon">:</td><td class="meta-value" id="sr-date">—</td></tr>
+              <tr><td class="meta-label">Ref. By Dr.</td><td class="meta-colon">:</td><td class="meta-value" id="sr-ref">—</td><td></td><td class="meta-label">Sex</td><td class="meta-colon">:</td><td class="meta-value" id="sr-sex">Male</td></tr>
+            </table>
+            <hr class="report-hr">
+            <div class="report-title">Serology Report</div>
+            <div class="col-headers"><span>Test Name</span><span>Result</span></div>
+            <div class="test-entry">
+              <div class="test-row"><span class="test-name">1) HBsAg Antibody</span><span class="test-result" id="sr-hbsag">NEGATIVE</span></div>
+              <div class="test-method" id="sr-hbsag-method"></div>
+              <div class="test-note" id="sr-hbsag-note"></div>
+            </div>
+            <div class="test-entry">
+              <div class="test-row"><span class="test-name">2) HIV Antibody (HIV-1 &amp; HIV-2) :</span><span class="test-result" id="sr-hiv">NON-REACTIVE for HIV I &amp; II</span></div>
+              <div class="test-method" id="sr-hiv-method"></div>
+              <div class="test-note" id="sr-hiv-note"></div>
+            </div>
+            <div class="test-entry" id="sr-hcv-entry">
+              <div class="test-row"><span class="test-name">3) HCV Test</span><span class="test-result" id="sr-hcv">NEGATIVE</span></div>
+              <div class="test-method">[ Immunochromatography Method ]</div>
+            </div>
+            <div style="margin-top:7.5em"></div>
+            <div class="signature-area">SIGNATURE</div>
+          </div>
+          <div class="lab-footer"><div class="footer-ornament">&#x1F4D6;&#x2764;&#x1F4D6;</div><div class="footer-bar"><div class="footer-text">These are only reading based on technical analysis and no opinion is indicated therefore said reading's<br>should please be got certified by pathologist before using the same for diagnosis and treatment</div></div></div>
+        </div></div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Serology History -->
+  <div id="sero-hist" class="sub-tab-page">
+    <div class="history-page" id="sero-hist-content"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     HAEMOGRAM MAIN TAB
+════════════════════════════════════════ -->
+<div id="main-haemogram" class="main-tab-page active">
+  <div class="sub-tab-bar">
+    <button class="sub-tab-btn active" onclick="switchSub('haemo','form',this)">📋 Form</button>
+    <button class="sub-tab-btn" onclick="switchSub('haemo','hist',this)">🕒 History</button>
+  </div>
+
+  <!-- Haemogram Form -->
+  <div id="haemo-form" class="sub-tab-page active">
+    <div class="workspace">
+      <aside class="form-panel">
+        <h2>Patient Details</h2>
+        <div class="field"><label>Patient Name</label>
+          <div class="name-wrap">
+            <input type="text" id="hf-name" placeholder="Enter name" autocomplete="off" oninput="haemoSync();showSug('hf-name','haemo-sug','haemo')" onblur="hideSug('haemo-sug')">
+            <div class="name-suggestions" id="haemo-sug"></div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="display:none"><label>Date</label><input type="text" id="hf-date" readonly></div>
+          <div style="display:none"><select id="hf-sex"><option value="Male">Male</option><option value="Female">Female</option></select></div>
+        </div>
+        <div class="field"><label>Ref. By Dr.</label>
+          <input type="text" id="hf-ref" list="href-options" placeholder="Select or type..." value="Sharda Netralay" oninput="haemoSync()">
+          <datalist id="href-options"><option value="None"><option value="Self"><option value="Sharda Netralay"></datalist>
+        </div>
+
+        <h2>Haemogram Values</h2>
+        <div class="field"><label>Haemoglobin (Gms %)</label><input type="text" id="hf-hb" placeholder="e.g. 14.3" oninput="haemoSync()"></div>
+        <div class="field"><label>W.B.C. Count Total (Per c.m.m)</label><input type="text" id="hf-wbc" placeholder="e.g. 10,400" oninput="haemoSync()"></div>
+        <div class="field">
+          <label>ESR (mm)</label>
+          <input type="text" id="hf-esr" placeholder="e.g. 10" oninput="haemoSync()">
+          <div id="hf-esr-hint" style="font-size:.72rem;color:#718096;margin-top:3px">Male: 0–8 mm · Female: 0–20 mm at end of first Hr.</div>
+        </div>
+
+        <div class="result-group">
+          <h3>W.B.C. Count Differential</h3>
+          <div class="field-row">
+            <div class="field"><label>Neutrophils %</label><input type="number" id="hf-neut" placeholder="e.g. 77" min="0" max="100" oninput="haemoSync();checkDiff()"></div>
+            <div class="field"><label>Lymphocytes %</label><input type="number" id="hf-lymp" placeholder="e.g. 17" min="0" max="100" oninput="haemoSync();checkDiff()"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Eosinophils %</label><input type="number" id="hf-eosi" placeholder="e.g. 03" min="0" max="100" oninput="haemoSync();checkDiff()"></div>
+            <div class="field"><label>Monocytes %</label><input type="number" id="hf-mono" placeholder="e.g. 03" min="0" max="100" oninput="haemoSync();checkDiff()"></div>
+          </div>
+          <div class="field"><label>Basophils %</label><input type="number" id="hf-baso" value="00" placeholder="e.g. 00" min="0" max="100" oninput="haemoSync();checkDiff()"></div>
+          <div class="diff-counter" id="diff-counter" style="display:none"></div>
+        </div>
+
+        <div class="field"><label>Platelets</label><div class="field-row"><input type="text" id="hf-plat" placeholder="e.g. 2.25" oninput="haemoSync()" style="flex:1"><select id="hf-plat-unit" onchange="haemoSync()" style="width:110px"><option value="lakhs" selected>Lakhs</option><option value="thousands">Thousands</option></select></div></div>
+        <div class="field"><label>Blood Sugar Random (mg/dl)</label><input type="text" id="hf-sugar" placeholder="e.g. 102.0" oninput="haemoSync()"></div>
+
+        <div class="result-group">
+          <h3>Urine Exam</h3>
+          <div class="field"><label>Albumin</label>
+            <select id="hf-alb" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="Absent" selected>Absent</option><option value="Present (Trace)">Present (Trace)</option><option value="(+)">(+)</option><option value="(++)">(++)</option><option value="(+++)">(+++)</option><option value="(++++)">(++++)</option></select>
+          </div>
+          <div class="field"><label>Sugar</label>
+            <select id="hf-usg" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="Absent" selected>Absent</option><option value="Present (Trace)">Present (Trace)</option><option value="(+)">(+)</option><option value="(++)">(++)</option><option value="(+++)">(+++)</option><option value="(++++)">(++++)</option></select>
+          </div>
+          <div class="field"><label>Microscopy</label>
+              <textarea id="hf-mic" rows="3" placeholder="Nil" oninput="haemoSync()" style="width:100%;resize:none;font-family:inherit;font-size:inherit;padding:6px 8px;border:1px solid #cbd5e0;border-radius:6px;line-height:1.5">Nil</textarea>
+          </div>
+        </div>
+
+        <div class="result-group">
+          <h3>Bleeding Time (B.T.) &amp; Clotting Time (CT)</h3>
+          <div class="field">
+            <label>Bleeding Time (B.T.)</label>
+            <div style="display:flex;gap:6px;align-items:center">
+              <select id="hf-bt-min" onchange="buildTime('bt');haemoSync()" style="flex:1"></select>
+              <select id="hf-bt-sec" onchange="buildTime('bt');haemoSync()" style="flex:1"></select>
+            </div>
+            <input type="text" id="hf-bt" placeholder="e.g. 1 min 30 sec" oninput="haemoSync()" style="margin-top:5px">
+          </div>
+          <div class="field">
+            <label>Clotting Time (CT)</label>
+            <div style="display:flex;gap:6px;align-items:center">
+              <select id="hf-ct-min" onchange="buildTime('ct');haemoSync()" style="flex:1"></select>
+              <select id="hf-ct-sec" onchange="buildTime('ct');haemoSync()" style="flex:1"></select>
+            </div>
+            <input type="text" id="hf-ct" placeholder="e.g. 4 min 20 sec" oninput="haemoSync()" style="margin-top:5px">
+          </div>
+        </div>
+        <div class="field"><label>HCV Test</label>
+          <select id="hf-hcv" onchange="haemoSync()"><option value="" selected>-- Not tested --</option><option value="NEGATIVE">NEGATIVE</option><option value="POSITIVE">POSITIVE</option></select>
+        </div>
+        <div class="field"><label>Australia Antigen Test</label>
+          <select id="hf-aat" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="NEGATIVE" selected>NEGATIVE</option><option value="POSITIVE">POSITIVE</option></select>
+        </div>
+        <div class="field"><label>H.I.V Antibody (HIV-I &amp; II)</label>
+          <select id="hf-hiv" onchange="haemoSync()"><option value="">-- Not tested --</option><option value="NON-REACTIVE" selected>NON-REACTIVE</option><option value="REACTIVE">REACTIVE</option></select>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-print" onclick="haemoPrint()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print
+          </button>
+          <button class="btn-share" id="haemo-share-btn" onclick="haemoShare()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share
+          </button>
+        </div>
+      </aside>
+
+      <main class="preview-panel">
+        <h2>Live Preview</h2>
+        <div class="report-scaler"><div class="report" id="haemo-report">
+          <!-- LAB HEADER (same) -->
+          <div class="lab-header">
+            <div class="lab-header-top">
+              <div class="microscope-circle">
+                <svg viewBox="0 0 100 100" fill="none"><rect x="44" y="8" width="12" height="22" rx="4" fill="#2d3a6e"/><rect x="40" y="28" width="20" height="8" rx="3" fill="#2d3a6e"/><rect x="44" y="34" width="12" height="28" rx="3" fill="#3a4a80"/><rect x="46" y="60" width="8" height="14" rx="3" fill="#2d3a6e"/><rect x="28" y="72" width="44" height="6" rx="3" fill="#3a5a8c"/><ellipse cx="50" cy="88" rx="26" ry="6" fill="#2d3a6e"/><rect x="38" y="36" width="8" height="40" rx="3" fill="#4a6aa0"/><ellipse cx="34" cy="55" rx="7" ry="5" fill="#5a7ab0"/><ellipse cx="34" cy="67" rx="5" ry="4" fill="#7a9ac0"/></svg>
+              </div>
+              <div class="lab-title-block"><div class="lab-name"></div><div class="lab-sub">Computerised</div></div>
+            </div>
+            <div class="lab-header-bottom">
+              <div class="lab-address">117/B, Income Tax Colony, Infront of Sharda Netralay,<br>Nakane Road, Deopur, Dhule- 424002<br><span class="phone"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/></svg>: 9422707425</span></div>
+              <div class="lab-doctor">Mrs. Manjusha P. Pitrubhakta<br>B.Sc.,D.M.L.T. (Pune)<br><span class="reg">Reg. No.: PGD/MLT/0005/2021</span></div>
+            </div>
+          </div>
+          <!-- HAEMOGRAM BODY -->
+          <div class="report-body">
+            <table class="meta-table"><colgroup><col class="c-label"><col class="c-colon"><col class="c-value"><col class="c-gap"><col class="c-rlabel"><col class="c-rcolon"><col class="c-rvalue"></colgroup>
+              <tr><td class="meta-label" style="white-space:nowrap">Patient's Name</td><td class="meta-colon">:</td><td class="meta-value" id="hr-name">—</td><td></td><td class="meta-label">Date</td><td class="meta-colon">:</td><td class="meta-value" id="hr-date">—</td></tr>
+              <tr><td class="meta-label">Reference By</td><td class="meta-colon">:</td><td class="meta-value" id="hr-ref">—</td><td colspan="4"></td></tr>
+            </table>
+            <hr class="report-hr">
+            <div class="report-title">Haemogram</div>
+
+            <div class="haemo-col-headers">
+              <span>Test Name</span>
+              <span>Result</span>
+              <span>Normal Range</span>
+            </div>
+            <div id="haemo-table-body"></div>
+
+            <div class="haemo-footer-row">
+              <div class="haemo-thanks"><em>Thanks for Reference</em></div>
+              <div class="haemo-sig" style="padding-right:2cm">Signature</div>
+            </div>
+          </div>
+          <div class="lab-footer"><div class="footer-ornament">&#x1F4D6;&#x2764;&#x1F4D6;</div><div class="footer-bar"><div class="footer-text">These are only reading based on technical analysis and no opinion is indicated therefore said reading's<br>should please be got certified by pathologist before using the same for diagnosis and treatment</div></div></div>
+        </div></div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Haemogram History -->
+  <div id="haemo-hist" class="sub-tab-page">
+    <div class="history-page" id="haemo-hist-content"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     ALL HISTORY MAIN TAB
+════════════════════════════════════════ -->
+<div id="main-allhistory" class="main-tab-page">
+  <div class="history-page" id="all-hist-content"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+     TEMPLATES MAIN TAB (hidden)
+════════════════════════════════════════ -->
+<div id="main-templates" class="main-tab-page">
+  <div class="templates-page">
+    <div class="tpl-header">
+      <div><h2>✏️ Report Note Templates</h2><p>Edit notes shown on the Serology report based on test result. Saved locally.</p></div>
+      <button class="btn-tpl-save" onclick="saveTemplates()">💾 Save All Templates</button>
+    </div>
+    <div class="tpl-grid">
+      <div class="tpl-card"><div class="tpl-card-header"><span class="tpl-test">HBsAg Antibody</span><span class="badge badge-neg">NEGATIVE</span></div>
+        <div class="tpl-field"><label>Method Line</label><input type="text" id="tpl-hbsag-neg-method"></div>
+        <div class="tpl-field"><label>Note Text</label><textarea id="tpl-hbsag-neg-note" rows="4"></textarea></div>
+      </div>
+      <div class="tpl-card"><div class="tpl-card-header"><span class="tpl-test">HBsAg Antibody</span><span class="badge badge-pos">POSITIVE</span></div>
+        <div class="tpl-field"><label>Method Line</label><input type="text" id="tpl-hbsag-pos-method"></div>
+        <div class="tpl-field"><label>Note Text</label><textarea id="tpl-hbsag-pos-note" rows="4"></textarea></div>
+      </div>
+      <div class="tpl-card"><div class="tpl-card-header"><span class="tpl-test">HIV Antibody</span><span class="badge badge-nrx">NON-REACTIVE</span></div>
+        <div class="tpl-field"><label>Method Line</label><input type="text" id="tpl-hiv-nrx-method"></div>
+        <div class="tpl-field"><label>Note Text</label><textarea id="tpl-hiv-nrx-note" rows="4"></textarea></div>
+      </div>
+      <div class="tpl-card"><div class="tpl-card-header"><span class="tpl-test">HIV Antibody</span><span class="badge badge-rx">REACTIVE</span></div>
+        <div class="tpl-field"><label>Method Line</label><input type="text" id="tpl-hiv-rx-method"></div>
+        <div class="tpl-field"><label>Note Text</label><textarea id="tpl-hiv-rx-note" rows="4"></textarea></div>
+      </div>
+    </div>
+    <div id="tpl-saved-msg" class="tpl-saved-msg" style="display:none">✅ Templates saved!</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     BLOOD SUGAR MAIN TAB
+════════════════════════════════════════ -->
+<div id="main-bloodsugar" class="main-tab-page">
+  <div class="sub-tab-bar">
+    <button class="sub-tab-btn active" onclick="switchSub('bs','form',this)">📋 Form</button>
+    <button class="sub-tab-btn" onclick="switchSub('bs','hist',this)">🕒 History</button>
+  </div>
+
+  <div id="bs-form" class="sub-tab-page active">
+    <div class="workspace">
+      <aside class="form-panel">
+        <h2>Patient Details</h2>
+        <div class="field"><label>Patient Name</label>
+          <div class="name-wrap">
+            <input type="text" id="bsf-name" placeholder="Enter name" autocomplete="off" oninput="bsSync();showSug('bsf-name','bs-sug','bs')" onblur="hideSug('bs-sug')">
+            <div class="name-suggestions" id="bs-sug"></div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="display:none"><label>Date</label><input type="text" id="bsf-date" readonly></div>
+          <div class="field"><label>Sex</label>
+            <select id="bsf-sex" onchange="bsSync()">
+              <option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Ref. By Dr.</label>
+          <input type="text" id="bsf-ref" list="bsref-opts" placeholder="Select or type..." value="Sharda Netralay" oninput="bsSync()">
+          <datalist id="bsref-opts"><option value="None"><option value="Self"><option value="Sharda Netralay"></datalist>
+        </div>
+
+        <h2>BSL (Random) <span style="font-weight:400;color:#718096;font-size:.75rem">Normal 70–140 mg/dl</span></h2>
+        <div class="result-group">
+          <div class="field-row">
+            <div class="field"><label>BSL Value (mg/dl)</label><input type="number" id="bsf-r-val" placeholder="e.g. 102" step="0.1" oninput="bsSync()"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Urine Sugar</label>
+              <select id="bsf-r-usg" onchange="bsSync()">
+                <option value="">--</option><option value="Absent">Absent</option><option value="Present">Present</option>
+                <option value="(+)">(+)</option><option value="(++)">(++)</option><option value="(+++)">(+++)</option><option value="Trace">Trace</option>
+              </select>
+            </div>
+            <div class="field"><label>Ketone</label>
+              <select id="bsf-r-ket" onchange="bsSync()">
+                <option value="">--</option><option value="Absent">Absent</option><option value="Present">Present</option>
+                <option value="(+)">(+)</option><option value="(++)">(++)</option><option value="Trace">Trace</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <h2>BSL (Fasting) <span style="font-weight:400;color:#718096;font-size:.75rem">Normal 70–110 mg/dl</span></h2>
+        <div class="result-group">
+          <div class="field"><label>BSL Value (mg/dl)</label><input type="number" id="bsf-f-val" placeholder="e.g. 156" step="0.1" oninput="bsSync()"></div>
+          <div class="field-row">
+            <div class="field"><label>Urine Sugar</label>
+              <select id="bsf-f-usg" onchange="bsSync()">
+                <option value="">--</option><option value="Absent">Absent</option><option value="Present">Present</option>
+                <option value="(+)">(+)</option><option value="(++)">(++)</option><option value="(+++)">(+++)</option><option value="Trace">Trace</option>
+              </select>
+            </div>
+            <div class="field"><label>Ketone</label>
+              <select id="bsf-f-ket" onchange="bsSync()">
+                <option value="">--</option><option value="Absent">Absent</option><option value="Present">Present</option>
+                <option value="(+)">(+)</option><option value="(++)">(++)</option><option value="Trace">Trace</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <h2>BSL (Post-Prandial) <span style="font-weight:400;color:#718096;font-size:.75rem">Normal 70–140 mg/dl</span></h2>
+        <div class="result-group">
+          <div class="field"><label>BSL Value (mg/dl)</label><input type="number" id="bsf-p-val" placeholder="e.g. 205" step="0.1" oninput="bsSync()"></div>
+          <div class="field-row">
+            <div class="field"><label>Urine Sugar</label>
+              <select id="bsf-p-usg" onchange="bsSync()">
+                <option value="">--</option><option value="Absent">Absent</option><option value="Present">Present</option>
+                <option value="(+)">(+)</option><option value="(++)">(++)</option><option value="(+++)">(+++)</option><option value="Trace">Trace</option>
+              </select>
+            </div>
+            <div class="field"><label>Ketone</label>
+              <select id="bsf-p-ket" onchange="bsSync()">
+                <option value="">--</option><option value="Absent">Absent</option><option value="Present">Present</option>
+                <option value="(+)">(+)</option><option value="(++)">(++)</option><option value="Trace">Trace</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-print" onclick="bsPrint()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print
+          </button>
+          <button class="btn-share" id="bs-share-btn" onclick="bsShare()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share
+          </button>
+        </div>
+      </aside>
+
+      <main class="preview-panel">
+        <h2>Live Preview — A5</h2>
+        <div class="report-scaler">
+        <div class="report bs-report" id="bs-report">
+
+          <!-- BLOOD SUGAR BODY — Option B data layout -->
+          <div class="bs-body">
+            <table class="bs-meta-table">
+              <tr>
+                <td class="bs-meta-label">Name</td><td class="bs-meta-colon">:</td>
+                <td class="bs-meta-value" id="bsr-name" colspan="2" style="white-space:normal;word-break:break-word">—</td>
+              </tr>
+              <tr>
+                <td class="bs-meta-label">Ref. By</td><td class="bs-meta-colon">:</td>
+                <td class="bs-meta-value" id="bsr-ref">—</td>
+                <td class="bs-meta-right"><span class="bs-meta-label">Date</span><span class="bs-meta-colon">:</span><span class="bs-meta-value" id="bsr-date">—</span></td>
+              </tr>
+            </table>
+            <div class="bs-report-title">Blood Sugar Report</div>
+            <div class="bs-test-header">Test</div>
+
+            <div id="bsr-sex" style="display:none"></div>
+            <div id="bs-sections"></div>
+
+            <div class="bs-footer-row">
+              <div class="bs-thanks"><em>Thanks !</em></div>
+              <div class="bs-sig">Signature</div>
+            </div>
+          </div>
+
+        </div><!-- /bs-report -->
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Blood Sugar History -->
+  <div id="bs-hist" class="sub-tab-page">
+    <div class="history-page" id="bs-hist-content"></div>
+  </div>
+</div>
+
+<style>
+/* ── Blood Sugar Report — original header + Option B data ── */
+.bs-report{max-width:560px;font-size:10.5pt;font-family:'Source Serif 4','Times New Roman',serif;line-height:1.35}
+.bs-lab-header{background:linear-gradient(180deg,#c8e6e4 0%,#a8d5d3 55%,#fff 55%)}
+.bs-header-top{padding:10px 14px 0 10px;gap:8px}
+.bs-micro{width:58px;height:58px}
+.bs-micro svg{width:40px;height:40px}
+.bs-lab-name{font-size:13pt}
+.bs-header-bottom{padding:4px 14px}
+
+/* Body */
+.bs-body{padding:8px 20px 12px;}
+.bs-meta-table{width:100%;border-collapse:collapse;margin-bottom:8px;table-layout:fixed}
+.bs-meta-table td{padding:2px 0;font-size:11pt;vertical-align:baseline}
+.bs-meta-label{font-weight:400;color:#333;white-space:nowrap;width:55px;font-size:11pt}
+.bs-meta-colon{width:12px;padding:0 3px;color:#333}
+.bs-meta-value{font-weight:700;font-size:11pt}
+.bs-meta-right{text-align:right;white-space:nowrap}
+.bs-meta-right .bs-meta-label{display:inline;width:auto}
+.bs-meta-right .bs-meta-colon{display:inline;padding:0 4px}
+.bs-meta-right .bs-meta-value{display:inline}
+.bs-hr{border:none;border-top:2px solid #1a1a2e;margin:4px 0 5px}
+.bs-hr-thin{border:none;border-top:1px solid #bbb;margin:2px 0 6px}
+
+/* Title */
+.bs-report-title{text-align:center;font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-decoration:underline;text-underline-offset:5px;margin-bottom:5px;margin-top:2.5em}
+
+/* Test header */
+.bs-test-header{font-weight:700;font-size:10.5pt;font-family:'Source Serif 4','Times New Roman',serif;padding:3px 2px;border-top:2px solid #1a1a2e;border-bottom:2px solid #1a1a2e;margin-bottom:12px;text-align:left}
+
+/* BSL section */
+.bs-section{margin-bottom:18px}
+
+/* Row 1: 3 cells — title(45%) | value(30%) | unit(25%) */
+.bs-row1{display:table;width:100%;margin-bottom:0px}
+.bs-section-title{display:table-cell;font-weight:400;font-size:11.2pt;width:45%;vertical-align:baseline}
+.bs-val-num{display:table-cell;font-size:11.2pt;text-align:center;width:30%;vertical-align:baseline}
+.bs-val-mg{display:table-cell;font-size:11.2pt;color:#333;text-align:right;width:25%;vertical-align:baseline}
+
+/* Normal range — italic, indented */
+.bs-section-normal{font-size:11.2pt;color:#333;margin:0px 0 2px 14px;}
+
+/* Urine row */
+.bs-urine-row{display:table;width:100%;font-size:11.2pt;color:#333;margin-top:0px}
+.bs-urine-tr{display:table-row}
+.bs-u-label{display:table-cell;width:85px;vertical-align:baseline}
+.bs-u-colon{display:table-cell;width:14px;vertical-align:baseline}
+.bs-u-val{display:table-cell;width:90px;vertical-align:baseline}
+.bs-u-gap{display:table-cell;width:10px;vertical-align:baseline}
+.bs-k-label{display:table-cell;width:65px;vertical-align:baseline}
+.bs-k-colon{display:table-cell;width:14px;vertical-align:baseline}
+.bs-k-val{display:table-cell;vertical-align:baseline}
+
+/* Footer */
+.bs-footer-row{margin-top:60px;display:flex;justify-content:space-between;align-items:flex-end;font-size:10pt;padding-top:8px}
+.bs-thanks{font-style:italic;font-weight:700;color:#333}
+.bs-sig{font-weight:700}
+.bs-lab-footer{margin-top:8px}
+
+@media print{
+  .bs-report{max-width:none;width:100%;font-size:9pt;min-height:100vh}
+  .bs-lab-name{font-size:12pt!important}
+}
+</style>
+
+<script>
+/* ══ BLOOD SUGAR SYNC ══ */
+function bsf(id){return document.getElementById(id).value.trim();}
+function fmtBSL(v){
+  if(!v)return '';
+  const n=parseFloat(v);
+  return isNaN(n)?v:n.toFixed(1);
+}
+
+function bsSync(){
+  document.getElementById('bsr-name').textContent=toTitleCase(bsf('bsf-name'))||'—';autoShrinkName('bsr-name');
+  document.getElementById('bsr-ref').textContent='     '+(bsf('bsf-ref')||'—');
+  document.getElementById('bsr-sex').textContent=document.getElementById('bsf-sex').value;
+  document.getElementById('bsr-date').textContent=(document.getElementById('bsf-date')?.value)||today;
+
+  const sections=[];
+
+  // Random
+  const rVal=bsf('bsf-r-val'), rUsg=bsf('bsf-r-usg'), rKet=bsf('bsf-r-ket');
+  if(rVal||rUsg||rKet) sections.push({title:'BSL  (Random)',normal:'Normal 70 to 140 mg/dl',val:rVal,usg:rUsg,ket:rKet});
+
+  // Fasting
+  const fVal=bsf('bsf-f-val'), fUsg=bsf('bsf-f-usg'), fKet=bsf('bsf-f-ket');
+  if(fVal||fUsg||fKet) sections.push({title:'BSL  (Fasting)',normal:'Normal 70 to 110 mg/dl',val:fVal,usg:fUsg,ket:fKet});
+
+  // Post-Prandial
+  const pVal=bsf('bsf-p-val'), pUsg=bsf('bsf-p-usg'), pKet=bsf('bsf-p-ket');
+  if(pVal||pUsg||pKet) sections.push({title:'BSL  (Post - Prandial)',normal:'Normal 70 to 140 mg/dl',val:pVal,usg:pUsg,ket:pKet});
+
+  document.getElementById('bs-sections').innerHTML=sections.map(s=>{
+    const numVal = s.val ? fmtBSL(s.val) : '&#8230;&#8230;&#8230;&#8230;';
+    const mgVal  = s.val ? 'mg/dl.)' : 'mg/dl.)';
+    const urineVal  = s.usg || '&#8230;&#8230;&#8230;.';
+    const ketoneVal = s.ket || '&#8230;&#8230;&#8230;';
+
+    return `<div class="bs-section">
+      <div class="bs-row1">
+        <span class="bs-section-title">${s.title}</span>
+        <span class="bs-val-num">${numVal}</span>
+        <span class="bs-val-mg">${mgVal}</span>
+      </div>
+      <div class="bs-section-normal">(${s.normal})</div>
+      <div class="bs-urine-row"><div class="bs-urine-tr">
+        <span class="bs-u-label">Urine Sugar</span>
+        <span class="bs-u-colon">&nbsp;:</span>
+        <span class="bs-u-val">&nbsp;${urineVal}</span>
+        <span class="bs-u-gap"></span>
+        <span class="bs-k-label">Ketone</span>
+        <span class="bs-k-colon">&nbsp;:</span>
+        <span class="bs-k-val">&nbsp;&nbsp;${ketoneVal}</span>
+      </div></div>
+    </div>`;
+  }).join('');
+}
+
+function buildBSRec(){
+  return{type:'bs',
+    name:bsf('bsf-name')||'Unknown',date:bsf('bsf-date'),sex:document.getElementById('bsf-sex').value,ref:bsf('bsf-ref'),
+    rVal:bsf('bsf-r-val'),rUsg:bsf('bsf-r-usg'),rKet:bsf('bsf-r-ket'),
+    fVal:bsf('bsf-f-val'),fUsg:bsf('bsf-f-usg'),fKet:bsf('bsf-f-ket'),
+    pVal:bsf('bsf-p-val'),pUsg:bsf('bsf-p-usg'),pKet:bsf('bsf-p-ket'),
+    savedAt:new Date().toISOString()};
+}
+function loadBSRec(r){
+  const f=(id,v)=>{if(v!==undefined&&document.getElementById(id))document.getElementById(id).value=v||'';};
+  f('bsf-name',r.name);f('bsf-sex',r.sex);f('bsf-ref',r.ref);
+  f('bsf-r-val',r.rVal);f('bsf-r-usg',r.rUsg);f('bsf-r-ket',r.rKet);
+  f('bsf-f-val',r.fVal);f('bsf-f-usg',r.fUsg);f('bsf-f-ket',r.fKet);
+  f('bsf-p-val',r.pVal);f('bsf-p-usg',r.pUsg);f('bsf-p-ket',r.pKet);
+  bsSync();
+}
+
+/* ══ BS Print ══ */
+async function bsPrint(){
+  if(!requireName('bsf-name'))return;
+  try{await saveRec(buildBSRec());}catch(e){if(handleSaveError(e))return;}
+  printOnly('bs-report','A5');
+}
+const bsPrintStyle=document.createElement('style');
+document.head.appendChild(bsPrintStyle);
+
+/* ══ BS Share ══ */
+async function bsShare(){
+  if(!requireName('bsf-name'))return;
+  const btn=document.getElementById('bs-share-btn');const orig=btn.innerHTML;
+  if(typeof html2canvas==='undefined'){btn.innerHTML='⏳ Loading…';await new Promise((r,j)=>{h2cScript.addEventListener('load',r);h2cScript.addEventListener('error',j);});}
+  btn.innerHTML='⏳ Preparing…';btn.disabled=true;
+  try{
+    const blob=await captureEl(document.getElementById('bs-report'));
+    await saveRec(buildBSRec());
+    await doShare(blob,bsf('bsf-name'));
+  }catch(e){if(!handleSaveError(e)&&e.name!=='AbortError')alert('Could not share: '+e.message);}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+</script>
+
+<script>
+/* ══ IndexedDB ══ */
+let db;
+const DB_NAME='pitrubhakta_lab', DB_VERSION=2, STORE='reports';
+function openDB(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open(DB_NAME,DB_VERSION);
+    r.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains(STORE)){
+        const s=d.createObjectStore(STORE,{keyPath:'id',autoIncrement:true});
+        s.createIndex('name','name',{unique:false});
+        s.createIndex('savedAt','savedAt',{unique:false});
+        s.createIndex('type','type',{unique:false});
+      } else if(e.oldVersion<2){
+        // add type index if upgrading
+        try{ e.target.transaction.objectStore(STORE).createIndex('type','type',{unique:false}); }catch(ex){}
+      }
+    };
+    r.onsuccess=e=>{db=e.target.result;res(db)};
+    r.onerror=e=>rej(e.target.error);
+  });
+}
+function saveRec(rec){
+  return new Promise(async(res,rej)=>{
+    // Check if limit is unlocked
+    const tx=db.transaction(STORE,'readwrite');
+    const r=tx.objectStore(STORE).add(rec);
+    r.onsuccess=()=>res(r.result);
+    r.onerror=e=>rej(e.target.error);
+  });
+}
+
+/* ══ Secret unlock — type secret code in any name field ══ */
+const _SECRET='GAURAV8485';
+const _BACKUP_SECRET='BACKUP8485';
+function checkSecretCode(val){
+  if(val.trim()===_SECRET){
+    localStorage.setItem('_pcl_unlocked','true');
+    const activeInput=document.activeElement;
+    if(activeInput)activeInput.value='';
+    showToast('✅ Limit removed','#1a3a5c');
+    return true;
+  }
+  if(val.trim()==='LOCK_PCL'){
+    localStorage.removeItem('_pcl_unlocked');
+    const activeInput=document.activeElement;
+    if(activeInput)activeInput.value='';
+    showToast('🔒 Limit restored','#dc2626');
+    return true;
+  }
+  if(val.trim()==='SETTING8485'){
+    localStorage.setItem('_pcl_settings','true');
+    const activeInput=document.activeElement;
+    if(activeInput)activeInput.value='';
+    const el=document.querySelector('.main-tab-btn[onclick*="settings"]');
+    if(el)el.style.display='';
+    showToast('✅ Settings enabled','#1a3a5c');
+    return true;
+  }
+  if(val.trim()==='HIDE_SETTING'){
+    localStorage.removeItem('_pcl_settings');
+    const activeInput=document.activeElement;
+    if(activeInput)activeInput.value='';
+    const el=document.querySelector('.main-tab-btn[onclick*="settings"]');
+    if(el)el.style.display='none';
+    showToast('🔒 Settings hidden','#dc2626');
+    return true;
+  }
+  if(val.trim()===_BACKUP_SECRET){
+    localStorage.setItem('_pcl_backup','true');
+    const activeInput=document.activeElement;
+    if(activeInput)activeInput.value='';
+    // Try to show existing element
+    const el=document.getElementById('backup-btns-area');
+    if(el){
+      el.style.display='flex';
+    } else {
+      // History tab not opened yet — switch to it and re-render
+      document.querySelectorAll('.main-tab-page').forEach(p=>p.classList.remove('active'));
+      document.querySelectorAll('.main-tab-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById('main-allhistory').classList.add('active');
+      document.querySelectorAll('.main-tab-btn')[6].classList.add('active');
+      document.getElementById('all-hist-content').innerHTML='';
+      renderHistory('all','all-hist-content');
+      // After render, show the buttons
+      setTimeout(()=>{
+        const el2=document.getElementById('backup-btns-area');
+        if(el2)el2.style.display='flex';
+      },300);
+    }
+    showToast('✅ Backup controls enabled','#1a3a5c');
+    return true;
+  }
+  if(val.trim()==='HIDE_BACKUP'){
+    localStorage.removeItem('_pcl_backup');
+    const activeInput=document.activeElement;
+    if(activeInput)activeInput.value='';
+    const el=document.getElementById('backup-btns-area');
+    if(el)el.style.display='none';
+    showToast('🔒 Backup controls hidden','#dc2626');
+    return true;
+  }
+  return false;
+}
+
+function showToast(msg, bg){
+  const t=document.createElement('div');
+  t.style.cssText=`position:fixed;bottom:20px;right:20px;background:${bg};color:#fff;padding:10px 18px;border-radius:8px;font-size:.85rem;z-index:9999;opacity:0;transition:opacity .3s`;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.style.opacity='1',10);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),400);},2500);
+}
+function getAllRecs(){return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readonly');const r=tx.objectStore(STORE).getAll();r.onsuccess=()=>res(r.result);r.onerror=e=>rej(e.target.error)});}
+function delRec(id){return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');const r=tx.objectStore(STORE).delete(id);r.onsuccess=()=>res();r.onerror=e=>rej(e.target.error)});}
+
+/* ══ Date helpers ══ */
+function fmtDate(d){return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();}
+function fmtDT(iso){const d=new Date(iso);return fmtDate(d)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+function buildFN(name){const n=name.trim().replace(/\s+/g,'_')||'Patient';const now=new Date();return `${n}_${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()}_${String(now.getHours()).padStart(2,'0')}-${String(now.getMinutes()).padStart(2,'0')}`;}
+
+const today=fmtDate(new Date());
+function setVal(id,v){const el=document.getElementById(id);if(el)el.value=v;}
+setVal('sf-date',today);
+setVal('hf-date',today);
+setVal('bsf-date',today);
+setVal('cf-date',today);
+setVal('bcf-date',today);
+
+/* ══ Tab switching ══ */
+function switchMain(tab,btn){
+  document.querySelectorAll('.main-tab-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.main-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('main-'+tab).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(tab==='allhistory'){document.getElementById('all-hist-content').innerHTML='';renderHistory('all','all-hist-content');}
+  if(tab==='bill'){initBill();}
+  if(tab==='crpra'){crpraSync();}
+  if(tab==='biochem'){biochemSync();}
+  if(tab==='settings'){buildSettingsCards();}
+}
+function switchSub(prefix,sub,btn){
+  const parent=btn.closest('.main-tab-page');
+  parent.querySelectorAll('.sub-tab-page').forEach(p=>p.classList.remove('active'));
+  parent.querySelectorAll('.sub-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(prefix+'-'+sub).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(sub==='hist'){
+    if(prefix==='sero'){document.getElementById('sero-hist-content').innerHTML='';renderHistory('sero','sero-hist-content');}
+    if(prefix==='haemo'){document.getElementById('haemo-hist-content').innerHTML='';renderHistory('haemo','haemo-hist-content');}
+    if(prefix==='bs'){document.getElementById('bs-hist-content').innerHTML='';renderHistory('bs','bs-hist-content');}
+    if(prefix==='bill'){document.getElementById('bill-hist-content').innerHTML='';renderHistory('bill','bill-hist-content');}
+    if(prefix==='crpra'){document.getElementById('crpra-hist-content').innerHTML='';renderHistory('crpra','crpra-hist-content');}
+    if(prefix==='biochem'){document.getElementById('biochem-hist-content').innerHTML='';renderHistory('biochem','biochem-hist-content');}
+  }
+}
+
+/* ══ Name autocomplete ══ */
+async function showSug(inputId,sugId,type){
+  const val=document.getElementById(inputId).value.trim().toLowerCase();
+  const box=document.getElementById(sugId);
+  if(!val||!db){box.classList.remove('open');return;}
+  let all=await getAllRecs();
+  all.sort((a,b)=>new Date(b.savedAt)-new Date(a.savedAt));
+  const seen=new Map();
+  all.forEach(r=>{
+    const k=r.name.toLowerCase();
+    if(k.includes(val)&&!seen.has(k)) seen.set(k,r);
+  });
+  if(seen.size===0){box.classList.remove('open');return;}
+  box.innerHTML='';
+  seen.forEach(r=>{
+    const d=document.createElement('div');
+    d.className='sug-item';
+    const typeLbl=r.type==='sero'?'🔬':r.type==='haemo'?'🩸':r.type==='bs'?'🩺':r.type==='bill'?'🧾':r.type==='crpra'?'🧪':'🧬';
+    d.innerHTML=`<span>${r.name}</span><span class="sug-meta">${typeLbl} ${r.sex||''} · ${fmtDate(new Date(r.savedAt))}</span>`;
+    d.addEventListener('mousedown', e=>{
+      e.preventDefault();
+      if(type==='sero') loadSeroRec(r);
+      else if(type==='haemo') loadHaemoRec(r);
+      else if(type==='bs') loadBSRec(r);
+      else if(type==='bill') loadBillRec(r);
+      else if(type==='crpra') loadCRPRARec(r);
+      else loadBiochemRec(r);
+      box.classList.remove('open');
+    });
+    box.appendChild(d);
+  });
+
+  // Position fixed dropdown below the input
+  const input=document.getElementById(inputId);
+  const rect=input.getBoundingClientRect();
+  box.style.top=(rect.bottom+2)+'px';
+  box.style.left=rect.left+'px';
+  box.style.width=rect.width+'px';
+  box.classList.add('open');
+}
+function hideSug(id){
+  setTimeout(()=>document.getElementById(id).classList.remove('open'),300);
+}
+
+/* ══ BT/CT dropdown → text builder ══ */
+function buildTime(field){
+  const minEl=document.getElementById(`hf-${field}-min`);
+  const secEl=document.getElementById(`hf-${field}-sec`);
+  const textEl=document.getElementById(`hf-${field}`);
+  const minV=minEl.value, secV=secEl.value;
+  if(minV==='manual'||secV==='manual'){
+    textEl.focus();textEl.placeholder='Type manually e.g. 2 min 45 sec';
+    // reset the manual option back so dropdown looks clean
+    if(minV==='manual')minEl.value='';
+    if(secV==='manual')secEl.value='';
+    return;
+  }
+  if(!minV&&!secV){textEl.value='';return;}
+  const parts=[];
+  if(minV)parts.push(minV+' min');
+  if(secV&&secV!=='00')parts.push(secV+' sec');
+  else if(secV==='00'&&minV)parts.push('00 sec');
+  textEl.value=parts.join(' ');
+}
+
+/* ══ SEROLOGY ══ */
+const DEFAULT_TPL={
+  hbsag_neg_method:'[ Immunochromatography Method ]',
+  hbsag_neg_note:'NOTE  : A Negative result at any time does not preclude the possibility of Hepatitis B infection. All positive results must be confirmed by other methods like Neutralization test or ELISA. Or Hepatitis B envelope antigen ( HBeAg ).',
+  hbsag_pos_method:'[ Immunochromatography Method ]',
+  hbsag_pos_note:'NOTE  : POSITIVE result indicates presence of Hepatitis B Surface Antigen. Please confirm with additional tests like ELISA or Neutralization test. Consult a physician immediately.',
+  hiv_nrx_method:'[ HIV I & II Tri-Dot Method ]',
+  hiv_nrx_note:'NOTE :Repeat this test after 3 months to rule out the possibility of false negative test (i.e.Window period). This test detects only antibody to HIV I & II and may become positive after risk behaviour. (exposure to antigen).The test may be false negative during incubation period. This test is known to give occassional false positive results.Hence all positive results should be confirmed by Western Blot.',
+  hiv_rx_method:'[ HIV I & II Tri-Dot Method ]',
+  hiv_rx_note:'1.Please repeat the test by some other screening method to rule out rare chance of false POSITIVE. If the repeat test is also REACTIVE then please confirm by WESTERN BLOT.\n2.AIDS & AIDS-RELATED SYNDROMES are clinical conditions & their diagnosis can only be established clinically. This screening test cannot be used as sole criteria for the diagnosis.\n3.Please DO NOT LABEL the patient as HIV-REACTIVE unless & until confirmed by the WESTERN BLOT.'
+};
+let tpl={...DEFAULT_TPL};
+
+function loadTemplates(){
+  const s=localStorage.getItem('pitrubhakta_templates');
+  if(s){try{tpl={...DEFAULT_TPL,...JSON.parse(s)};}catch(e){}}
+  document.getElementById('tpl-hbsag-neg-method').value=tpl.hbsag_neg_method;
+  document.getElementById('tpl-hbsag-neg-note').value=tpl.hbsag_neg_note;
+  document.getElementById('tpl-hbsag-pos-method').value=tpl.hbsag_pos_method;
+  document.getElementById('tpl-hbsag-pos-note').value=tpl.hbsag_pos_note;
+  document.getElementById('tpl-hiv-nrx-method').value=tpl.hiv_nrx_method;
+  document.getElementById('tpl-hiv-nrx-note').value=tpl.hiv_nrx_note;
+  document.getElementById('tpl-hiv-rx-method').value=tpl.hiv_rx_method;
+  document.getElementById('tpl-hiv-rx-note').value=tpl.hiv_rx_note;
+}
+function saveTemplates(){
+  tpl.hbsag_neg_method=document.getElementById('tpl-hbsag-neg-method').value.trim();
+  tpl.hbsag_neg_note=document.getElementById('tpl-hbsag-neg-note').value.trim();
+  tpl.hbsag_pos_method=document.getElementById('tpl-hbsag-pos-method').value.trim();
+  tpl.hbsag_pos_note=document.getElementById('tpl-hbsag-pos-note').value.trim();
+  tpl.hiv_nrx_method=document.getElementById('tpl-hiv-nrx-method').value.trim();
+  tpl.hiv_nrx_note=document.getElementById('tpl-hiv-nrx-note').value.trim();
+  tpl.hiv_rx_method=document.getElementById('tpl-hiv-rx-method').value.trim();
+  tpl.hiv_rx_note=document.getElementById('tpl-hiv-rx-note').value.trim();
+  localStorage.setItem('pitrubhakta_templates',JSON.stringify(tpl));
+  seroSync();
+  const m=document.getElementById('tpl-saved-msg');m.style.display='block';setTimeout(()=>m.style.display='none',3000);
+}
+
+function seroSync(){
+  document.getElementById('sr-name').textContent=toTitleCase(document.getElementById('sf-name').value.trim())||'—';
+  autoShrinkName('sr-name');
+  document.getElementById('sr-ref').textContent=document.getElementById('sf-ref').value.trim()||'—';
+  document.getElementById('sr-sex').textContent=document.getElementById('sf-sex').value;
+  document.getElementById('sr-date').textContent=document.getElementById('sf-date').value;
+  const hbsag=document.getElementById('sf-hbsag').value;
+  const hbsagEl=document.getElementById('sr-hbsag');
+  hbsagEl.textContent=hbsag==='NOT_TESTED'?'Not Tested':hbsag;
+  hbsagEl.classList.toggle('result-positive',hbsag==='POSITIVE');
+  // Hide entire entry if Not Tested
+  const hbsagEntry=document.querySelector('[id="sr-hbsag"]')?.closest('.test-entry');
+  if(hbsagEntry) hbsagEntry.style.display=hbsag==='NOT_TESTED'?'none':'';
+  document.getElementById('sr-hbsag-method').textContent=hbsag==='POSITIVE'?tpl.hbsag_pos_method:tpl.hbsag_neg_method;
+  document.getElementById('sr-hbsag-note').textContent=hbsag==='POSITIVE'?tpl.hbsag_pos_note:tpl.hbsag_neg_note;
+  const hiv=document.getElementById('sf-hiv').value;
+  const hivEntry=document.querySelector('[id="sr-hiv"]')?.closest('.test-entry');
+  if(hivEntry) hivEntry.style.display=hiv==='NOT_TESTED'?'none':'';
+  const hivEl=document.getElementById('sr-hiv');
+  hivEl.innerHTML=hiv;hivEl.classList.toggle('result-positive',hiv.startsWith('REACTIVE'));
+  document.getElementById('sr-hiv-method').textContent=hiv.startsWith('REACTIVE')?tpl.hiv_rx_method:tpl.hiv_nrx_method;
+  // For REACTIVE note — render numbered points with line breaks
+  const hivNote=hiv.startsWith('REACTIVE')?tpl.hiv_rx_note:tpl.hiv_nrx_note;
+  const hivNoteEl=document.getElementById('sr-hiv-note');
+  if(hiv.startsWith('REACTIVE')&&hivNote.includes('\n')){
+    hivNoteEl.innerHTML=hivNote.split('\n').map(line=>`<div style="margin-bottom:4px">${line}</div>`).join('');
+  } else {
+    hivNoteEl.textContent=hivNote;
+  }
+  const hcv=document.getElementById('sf-hcv').value;
+  const hcvEl=document.getElementById('sr-hcv');
+  hcvEl.textContent=hcv==='NOT_TESTED'?'Not Tested':hcv;
+  hcvEl.classList.toggle('result-positive',hcv==='POSITIVE');
+  const hcvEntry=document.getElementById('sr-hcv-entry');
+  if(hcvEntry) hcvEntry.style.display=hcv==='NOT_TESTED'?'none':'';
+}
+
+function buildSeroRec(){return{type:'sero',name:document.getElementById('sf-name').value.trim()||'Unknown',date:document.getElementById('sf-date').value,sex:document.getElementById('sf-sex').value,ref:document.getElementById('sf-ref').value.trim(),hbsag:document.getElementById('sf-hbsag').value,hiv:document.getElementById('sf-hiv').value,hcv:document.getElementById('sf-hcv').value,savedAt:new Date().toISOString()};}
+function loadSeroRec(r){document.getElementById('sf-name').value=r.name;document.getElementById('sf-sex').value=r.sex;document.getElementById('sf-ref').value=r.ref;document.getElementById('sf-hbsag').value=r.hbsag;document.getElementById('sf-hiv').value=r.hiv;if(r.hcv)document.getElementById('sf-hcv').value=r.hcv;seroSync();}
+
+/* ══ Smart print — only prints the specific report ══ */
+/* ══ Per-tab print margin settings ══ */
+const DEFAULT_MARGINS={top:15,bottom:15,left:15,right:15};
+const TAB_DEFAULT_MARGINS={
+  sero:{top:48,bottom:0,left:8,right:8},
+  haemo:{top:48,bottom:0,left:7,right:7},
+  bs:{top:48,bottom:15,left:11,right:5},
+  biochem:{top:48,bottom:15,left:23,right:23},
+  crpra:{top:47,bottom:15,left:23,right:23},
+  bill:{top:48,bottom:15,left:20,right:19},
+};
+
+// Apply defaults only if no saved value exists yet — never overwrite user-saved margins
+(function applyDefaultMargins(){
+  Object.entries(TAB_DEFAULT_MARGINS).forEach(([key,val])=>{
+    const lsKey='_pcl_margin_'+key;
+    if(!localStorage.getItem(lsKey)){
+      localStorage.setItem(lsKey,JSON.stringify(val));
+    }
+  });
+})();
+const TAB_KEYS={
+  'sero-report':'sero','haemo-report':'haemo','bs-report':'bs',
+  'biochem-report':'biochem','crpra-report':'crpra','bill-report':'bill'
+};
+
+function getMargins(reportId){
+  const key='_pcl_margin_'+(TAB_KEYS[reportId]||'default');
+  try{const s=localStorage.getItem(key);if(s)return JSON.parse(s);}catch(e){}
+  const tabKey=TAB_KEYS[reportId]||'default';
+  return TAB_DEFAULT_MARGINS[tabKey]?{...TAB_DEFAULT_MARGINS[tabKey]}:{...DEFAULT_MARGINS};
+}
+function saveMargins(tabKey,margins){
+  localStorage.setItem('_pcl_margin_'+tabKey,JSON.stringify(margins));
+}
+
+const _printStyle=document.createElement('style');
+document.head.appendChild(_printStyle);
+
+function printOnly(reportId, pageSize='A4'){
+  const m=getMargins(reportId);
+  const isA5=pageSize==='A5';
+  _printStyle.textContent=`
+    @media print {
+      @page { size:${pageSize}; margin:0; }
+      /* Suppress browser print header/footer URL */
+      html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body { margin:0!important; padding:0!important; }
+      body > *:not(.print-target-wrap) { display:none !important; }
+      .print-target-wrap {
+        display:block !important;
+        width:100%;
+        min-height:100vh;
+      }
+      .print-target-wrap .report,
+      .print-target-wrap .bs-report {
+        border:none!important;
+        max-width:none!important;
+        width:100%!important;
+        min-height:100vh;
+        font-size:${isA5?'10pt':'11.5pt'};
+        display:flex!important;
+        flex-direction:column!important;
+        padding:${m.top}mm ${m.right}mm ${m.bottom}mm ${m.left}mm !important;
+      }
+      .print-target-wrap .report-body { flex:1!important; }
+      .print-target-wrap #sero-report { min-height:unset!important; display:block!important; }
+      .print-target-wrap #sero-report .report-body { flex:none!important; min-height:unset!important; }
+      /* lab-footer flows naturally */
+      .print-target-wrap .lab-name { font-size:${isA5?'13pt':'18pt'}!important; }
+      /* Hide header and footer during print — using pre-printed paper */
+      .print-target-wrap .lab-header,
+      .print-target-wrap .bs-lab-header,
+      .print-target-wrap .lab-footer,
+      .print-target-wrap .bs-lab-footer,
+      .print-target-wrap .bill-top,
+      .print-target-wrap .bill-footer-row { display:none !important; }
+      /* Extra: explicitly hide BS lab header by both classes */
+      .print-target-wrap div.lab-header.bs-lab-header { display:none !important; }
+      .print-target-wrap div.lab-footer.bs-lab-footer { display:none !important; }
+      ${isA5?`
+      /* A5: hide lab header and footer */
+      .print-target-wrap .bs-lab-header,
+      .print-target-wrap .bs-lab-footer { display:none !important; }
+      `:''}
+      /* BS report: hide meta labels/colons but keep space — values align with pre-printed labels */
+      .print-target-wrap #bs-report .bs-meta-label,
+      .print-target-wrap #bs-report .bs-meta-colon,
+      .print-target-wrap #bs-report .bs-meta-right .bs-meta-label,
+      .print-target-wrap #bs-report .bs-meta-right .bs-meta-colon { visibility:hidden !important; }    }
+  `;
+  const report=document.getElementById(reportId);
+  const wrapper=document.createElement('div');
+  wrapper.className='print-target-wrap';
+  const placeholder=document.createElement('span');
+  report.parentNode.insertBefore(placeholder,report);
+  wrapper.appendChild(report);
+  document.body.appendChild(wrapper);
+
+  const restoreReport=()=>{
+    try{placeholder.parentNode.insertBefore(report,placeholder);}catch(e){}
+    try{placeholder.remove();}catch(e){}
+    try{wrapper.remove();}catch(e){}
+    _printStyle.textContent='';
+  };
+
+  // Collect all CSS from the page
+  let allCSS='';
+  try{
+    allCSS=Array.from(document.styleSheets).map(ss=>{
+      try{return Array.from(ss.cssRules).map(r=>r.cssText).join('\n');}catch(e){return '';}
+    }).join('\n');
+  }catch(e){}
+
+  // Build standalone print HTML
+  const printHTML=`<!DOCTYPE html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<style>
+@page{size:${pageSize} portrait;margin:0}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+html,body{margin:0;padding:0;width:100%;height:100%}
+${allCSS}
+@media print{
+  @page{size:${pageSize} portrait;margin:0}
+  html,body{margin:0;padding:0}
+}
+.print-target-wrap .report,.print-target-wrap .bs-report{
+  border:none!important;max-width:none!important;width:100%!important;
+  font-size:${isA5?'10pt':'11.5pt'};display:flex!important;flex-direction:column!important;
+  padding:${m.top}mm ${m.right}mm ${m.bottom}mm ${m.left}mm!important;
+}
+.print-target-wrap .lab-header,.print-target-wrap .bs-lab-header,
+.print-target-wrap .lab-footer,.print-target-wrap .bs-lab-footer,
+.print-target-wrap .bill-top,.print-target-wrap .bill-footer-row{display:none!important}
+.print-target-wrap #bs-report .bs-meta-label,
+.print-target-wrap #bs-report .bs-meta-colon{visibility:hidden!important}
+.print-target-wrap #sero-report{min-height:unset!important;display:block!important}
+.print-target-wrap #sero-report .report-body{flex:none!important;min-height:unset!important}
+</style>
+</head><body>${wrapper.outerHTML}</body></html>`;
+
+  // Use hidden iframe — most reliable cross-browser approach
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;border:none;opacity:0;pointer-events:none';
+  document.body.appendChild(iframe);
+
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+  iframeDoc.open();
+  iframeDoc.write(printHTML);
+  iframeDoc.close();
+
+  setTimeout(()=>{
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+    iframe.contentWindow.addEventListener('afterprint',()=>{
+      iframe.remove();
+      restoreReport();
+      setTimeout(()=>window.location.reload(),300);
+    });
+    // Fallback remove
+    setTimeout(()=>{
+      if(document.body.contains(iframe)) iframe.remove();
+      restoreReport();
+    },30000);
+  },800);
+}
+
+async function seroPrint(){
+  if(!requireName('sf-name'))return;
+  try{await saveRec(buildSeroRec());}catch(e){if(handleSaveError(e))return;}
+  printOnly('sero-report',getTabPageSize('sero','A4'));
+}
+
+/* ══ HAEMOGRAM SYNC ══ */
+function hv(id){
+  const el=document.getElementById(id);
+  if(!el) return '';
+  return el.value.trim();
+}
+
+function haemoSync(){
+  document.getElementById('hr-name').textContent=hv('hf-name')||'—';
+  autoShrinkName('hr-name');
+  document.getElementById('hr-ref').textContent=hv('hf-ref')||'—';
+  document.getElementById('hr-date').textContent=(document.getElementById('hf-date')?.value)||today;
+
+  let html='';
+
+  // Helper — one full line with 3 zones using padding, no fixed columns
+  const line=(label,result,range,opts={})=>{
+    const lbl = opts.underline ? `<b><u>${label}</u></b>` : opts.bold!==false ? `<b>${label}</b>` : label;
+    const col = opts.colon ? ' :' : '';
+    return `<div style="display:flex;font-size:11pt;padding:${opts.tight?'1px':'3px'} 0;line-height:1.5;font-family:inherit">
+      <span style="flex:0 0 38%;font-size:11pt">${lbl}${col}</span>
+      <span style="flex:0 0 22%;font-size:11pt">${result||''}</span>
+      <span style="flex:1;font-size:11pt;color:#333">${range||''}</span>
+    </div>`;
+  };
+
+  const gap=()=>`<div style="height:10px"></div>`;
+
+  // Haemoglobin
+  if(hv('hf-hb')){
+    const hbVal=parseFloat(hv('hf-hb'));
+    const hbDisplay=isNaN(hbVal)?hv('hf-hb'):hbVal.toFixed(1);
+    html+=line('Haemoglobin', hbDisplay+' g/dl', 'Male : 13.5 to 18.0 g/dl');
+    html+=line('','','Female : 12.0 to 16.0 g/dl',{bold:false});
+    html+=gap();
+  }
+
+  // WBC
+  if(hv('hf-wbc')){
+    html+=line('W.B.C. Total', hv('hf-wbc')+' /Cu. mm.', '4000-11000 /Cu. mm.');
+    html+=gap();
+  }
+
+  // Differential
+  const hasDiff=hv('hf-neut')||hv('hf-lymp')||hv('hf-eosi')||hv('hf-mono')||hv('hf-baso');
+  if(hasDiff){
+    html+=`<div style="font-size:11pt;font-weight:700;padding:3px 0"><b>Differential :</b></div>`;
+    const diffRow=(label,val,range)=>`<div style="display:flex;font-size:11pt;padding:1px 0;line-height:1.5;font-family:inherit"><span style="flex:0 0 38%;padding-left:18px">${label}</span><span style="flex:0 0 10%;text-align:right;padding-right:8px">${val}</span><span style="flex:0 0 12%">%</span><span style="flex:1">${range}</span></div>`;
+    if(hv('hf-neut')) html+=diffRow('Neutrophils',hv('hf-neut'),'50 - 70%');
+    if(hv('hf-lymp')) html+=diffRow('Lymphocytes',hv('hf-lymp'),'20 - 40%');
+    if(hv('hf-eosi')) html+=diffRow('Eosinophils',hv('hf-eosi'),'1 - 6%');
+    if(hv('hf-mono')) html+=diffRow('Monocytes',hv('hf-mono'),'2 - 10%');
+    if(hv('hf-baso')) html+=diffRow('Basophils',hv('hf-baso'),'0 - 1%');
+    html+=gap();
+  }
+
+  // Platelets
+  if(hv('hf-plat')){
+    const platUnit=document.getElementById('hf-plat-unit')?.value||'lakhs';
+    html+=line('Platelets', hv('hf-plat')+' '+platUnit, '1.5 - 4.5 Lakhs/cmm');
+  }
+
+  // ESR
+  if(hv('hf-esr')){
+    html+=gap();
+    html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit">
+      <span style="flex:0 0 38%"><b>ESR</b></span>
+      <span style="flex:0 0 22%">${hv('hf-esr')} mm.</span>
+      <span style="flex:1;white-space:nowrap">Male 0 - 8 mm. at the end of first Hr.</span>
+    </div>`;
+    html+=`<div style="display:flex;font-size:11pt;padding:1px 0;line-height:1.5;font-family:inherit">
+      <span style="flex:0 0 38%">(Westergreen's method)</span>
+      <span style="flex:0 0 22%"></span>
+      <span style="flex:1;white-space:nowrap">Female 0 - 20 mm. at the end of first Hr.</span>
+    </div>`;
+    html+=gap();
+  }
+
+  // Blood Sugar
+  if(hv('hf-sugar')){
+    const sugarRaw=parseFloat(hv('hf-sugar'));
+    const sugarVal=isNaN(sugarRaw)?hv('hf-sugar'):sugarRaw.toFixed(1);
+    html+=`<div style="height:8px"></div>`;
+    html+=line('Blood Sugar (Random)', sugarVal+' mg/dl', '70-140 mg/dl', {underline:true});
+  }
+
+  // Urine Exam
+  const alb=hv('hf-alb'),usg=hv('hf-usg'),mic=hv('hf-mic');
+  if(alb||usg||mic){
+    html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit">
+      <span style="flex:0 0 38%"><b><u>Urine Exam</u></b></span>
+      <span style="flex:1">
+        ${alb?`<div style="display:flex"><span style="width:90px">Albumin</span><span style="width:14px">:</span><span>${alb}</span></div>`:''}
+        ${usg?`<div style="display:flex"><span style="width:90px">Sugar</span><span style="width:14px">:</span><span>${usg}</span></div>`:''}
+        ${mic?`<div style="display:flex;font-size:11pt;padding:1px 0;line-height:1.5">
+          <span style="width:90px;flex-shrink:0">Microscopy</span>
+          <span style="width:14px;flex-shrink:0">:</span>
+          <span style="white-space:pre-line;flex:1">${mic}</span>
+        </div>`:''}
+      </span>
+    </div>`;
+  }
+
+  // BT / CT
+  if(hv('hf-bt')) html+=line('Bleeding Time (B.T.)', hv('hf-bt'), '1-4 Min', {underline:true});
+  if(hv('hf-ct')) html+=line('Clotting Time (CT)', hv('hf-ct'), '4-10 Min', {underline:true});
+
+  // HCV
+  if(hv('hf-hcv')){html+=`<div style="height:6px"></div>`;
+  html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit">
+    <span style="flex:0 0 38%"><b><u>HCV Test</u></b></span>
+    <span style="flex:0 0 22%">${hv('hf-hcv')}</span>
+    <span style="flex:1;white-space:nowrap">[ Immunochromatography Method ]</span>
+  </div>`;}
+
+  // Australia Antigen
+  if(hv('hf-aat')){html+=`<div style="height:6px"></div>`;
+  html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit"><span style="flex:0 0 38%"><b><u>Australia Antigen Test</u></b></span><span style="flex:0 0 22%">${hv('hf-aat')}</span><span style="flex:1;white-space:nowrap">[ Immunochromatography Method ]</span></div>`;}
+
+  // HIV — value spans full remaining width so it fits on one line
+  if(hv('hf-hiv')){
+    html+=`<div style="height:6px"></div>`;
+    html+=`<div style="display:flex;font-size:11pt;padding:3px 0;line-height:1.5;font-family:inherit"><span style="flex:0 0 38%;font-size:11pt"><b><u>H.I.V Antibody ( HIV-I & II )</u></b></span><span style="flex:1;font-size:11pt;white-space:nowrap">${hv('hf-hiv')}</span></div>`;
+    html+=`<div style="font-size:9pt;padding:1px 0;line-height:1.6;color:#333;padding-left:38%">(This is a rapid diagnostic Test.<br>Done by Device mtd.)</div>`;
+  }
+
+  document.getElementById('haemo-table-body').innerHTML=html;
+}
+
+/* ══ ESR hint update ══ */
+function updateESRHint(){
+  const sex=document.getElementById('hf-sex').value;
+  const hint=document.getElementById('hf-esr-hint');
+  if(!hint)return;
+  if(sex==='Female') hint.textContent='Female: 0–20 mm at end of first Hr.';
+  else hint.textContent='Male: 0–8 mm at end of first Hr.';
+}
+
+function buildHaemoRec(){
+  return{type:'haemo',name:hv('hf-name')||'Unknown',date:hv('hf-date'),sex:document.getElementById('hf-sex').value,
+    ref:hv('hf-ref'),hb:hv('hf-hb'),wbc:hv('hf-wbc'),esr:hv('hf-esr'),neut:hv('hf-neut'),lymp:hv('hf-lymp'),
+    eosi:hv('hf-eosi'),mono:hv('hf-mono'),baso:hv('hf-baso'),plat:hv('hf-plat'),platUnit:document.getElementById('hf-plat-unit')?.value||'lakhs',
+    sugar:hv('hf-sugar'),alb:hv('hf-alb'),usg:hv('hf-usg'),mic:hv('hf-mic'),
+    bt:hv('hf-bt'),ct:hv('hf-ct'),hcv:hv('hf-hcv'),aat:hv('hf-aat'),hiv:hv('hf-hiv'),
+    savedAt:new Date().toISOString()};
+}
+function loadHaemoRec(r){
+  const f=(id,v)=>{if(v!==undefined&&document.getElementById(id))document.getElementById(id).value=v;};
+  f('hf-name',r.name);f('hf-sex',r.sex);f('hf-ref',r.ref);f('hf-hb',r.hb);f('hf-wbc',r.wbc);f('hf-esr',r.esr);
+  f('hf-neut',r.neut);f('hf-lymp',r.lymp);f('hf-eosi',r.eosi);f('hf-mono',r.mono);f('hf-baso',r.baso);
+  f('hf-plat',r.plat);if(r.platUnit&&document.getElementById('hf-plat-unit'))document.getElementById('hf-plat-unit').value=r.platUnit;f('hf-sugar',r.sugar);f('hf-alb',r.alb);f('hf-usg',r.usg);f('hf-mic',r.mic);
+  f('hf-bt',r.bt);f('hf-ct',r.ct);f('hf-hcv',r.hcv);f('hf-aat',r.aat);f('hf-hiv',r.hiv);
+  // Try to restore dropdown selectors from stored text value
+  restoreTimeDropdown('bt', r.bt||'');
+  restoreTimeDropdown('ct', r.ct||'');
+  haemoSync(); checkDiff();
+}
+
+function restoreTimeDropdown(field, val){
+  // Parse "X min YY sec" back into dropdowns
+  const minMatch=val.match(/(\d+)\s*min/);
+  const secMatch=val.match(/(\d+)\s*sec/);
+  const minEl=document.getElementById(`hf-${field}-min`);
+  const secEl=document.getElementById(`hf-${field}-sec`);
+  if(minEl&&minMatch){
+    const opt=[...minEl.options].find(o=>o.value===minMatch[1]);
+    minEl.value=opt?minMatch[1]:'';
+  }
+  if(secEl&&secMatch){
+    const sv=secMatch[1].padStart(2,'0');
+    const opt=[...secEl.options].find(o=>o.value===sv);
+    secEl.value=opt?sv:'';
+  }
+}
+
+/* ══ WBC Differential Validation ══ */
+function checkDiff(){
+  const ids=['hf-neut','hf-lymp','hf-eosi','hf-mono','hf-baso'];
+  const vals=ids.map(id=>parseFloat(document.getElementById(id).value)||0);
+  const total=vals.reduce((a,b)=>a+b,0);
+  const hasAny=ids.some(id=>document.getElementById(id).value.trim()!=='');
+  const ctr=document.getElementById('diff-counter');
+  ids.forEach(id=>document.getElementById(id).classList.remove('diff-input-error'));
+  if(!hasAny){ctr.style.display='none';return;}
+  ctr.style.display='block';
+  if(total===100){
+    ctr.className='diff-counter ok';ctr.textContent='✅ Total: 100% — Perfect!';
+  } else if(total<100){
+    ctr.className='diff-counter warn';ctr.textContent=`⚠️ Total: ${total}% — Need ${100-total}% more`;
+  } else {
+    ctr.className='diff-counter over';ctr.textContent=`❌ Total: ${total}% — Exceeds 100% by ${total-100}%`;
+    ids.forEach(id=>{if(document.getElementById(id).value.trim())document.getElementById(id).classList.add('diff-input-error');});
+  }
+}
+function diffIsValid(){
+  const ids=['hf-neut','hf-lymp','hf-eosi','hf-mono','hf-baso'];
+  const hasAny=ids.some(id=>document.getElementById(id).value.trim()!=='');
+  if(!hasAny)return true;
+  const total=ids.reduce((sum,id)=>sum+(parseFloat(document.getElementById(id).value)||0),0);
+  return total===100;
+}
+
+async function haemoPrint(){
+  if(!requireName('hf-name'))return;
+  if(!diffIsValid()){alert('⚠️ W.B.C. Differential total must equal exactly 100%.\n\nCurrent total: '+['hf-neut','hf-lymp','hf-eosi','hf-mono','hf-baso'].reduce((s,id)=>s+(parseFloat(document.getElementById(id).value)||0),0)+'%\n\nPlease correct before printing.');return;}
+  try{await saveRec(buildHaemoRec());}catch(e){if(handleSaveError(e))return;}
+  printOnly('haemo-report','A4');
+}
+
+/* ══ Title Case for name inputs ══ */
+function autoShrinkName(elId){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  el.style.fontSize='';
+  const sizes=[11,10,9,8.5,8];
+  for(const s of sizes){
+    el.style.fontSize=s+'pt';
+    if(el.scrollWidth<=el.offsetWidth+2||s===sizes[sizes.length-1])break;
+  }
+}
+
+function toTitleCase(str){
+  return str.replace(/\w\S*/g, w=>w.charAt(0).toUpperCase()+w.substr(1).toLowerCase());
+}
+function applyTitleCase(el){
+  const pos=el.selectionStart;
+  const val=toTitleCase(el.value);
+  el.value=val;
+  el.setSelectionRange(pos,pos);
+}
+function initTitleCase(){
+  const nameIds=['sf-name','hf-name','bsf-name','bcf-name','cf-name','bf-name'];
+  const refIds=['sf-ref','hf-ref','bsf-ref','bcf-ref','cf-ref','bf-ref'];
+  [...nameIds,...refIds].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('input',()=>applyTitleCase(el));
+  });
+}
+function requireName(inputId){
+  const el=document.getElementById(inputId);
+  const val=el?el.value.trim():'';
+  if(!val){
+    if(el){
+      el.style.borderColor='#dc2626';
+      el.style.background='#fff5f5';
+      el.focus();
+      // Reset style after user starts typing
+      el.addEventListener('input',()=>{
+        el.style.borderColor='';el.style.background='';
+      },{once:true});
+    }
+    alert('⚠️ Patient name is required before printing or sharing.');
+    return false;
+  }
+  return true;
+}
+
+/* ══ html2canvas share ══ */
+const h2cScript=document.createElement('script');
+h2cScript.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+document.head.appendChild(h2cScript);
+
+async function captureEl(el){
+  const prev=el.style.minWidth;el.style.minWidth='740px';
+  const c=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#fff'});
+  el.style.minWidth=prev;
+  return new Promise(res=>c.toBlob(res,'image/png'));
+}
+async function doShare(blob,name){
+  const fn=buildFN(name);
+  const file=new File([blob],`${fn}.png`,{type:'image/png'});
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+    await navigator.share({title:`Report – ${name}`,text:`Report for ${name}`,files:[file]});
+  } else {
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=url;a.download=`${fn}.png`;document.body.appendChild(a);a.click();
+    document.body.removeChild(a);URL.revokeObjectURL(url);
+  }
+}
+async function seroShare(){
+  if(!requireName('sf-name'))return;
+  const btn=document.getElementById('sero-share-btn');const orig=btn.innerHTML;
+  if(typeof html2canvas==='undefined'){btn.innerHTML='⏳ Loading…';await new Promise((r,j)=>{h2cScript.addEventListener('load',r);h2cScript.addEventListener('error',j);});}
+  btn.innerHTML='⏳ Preparing…';btn.disabled=true;
+  try{const blob=await captureEl(document.getElementById('sero-report'));await saveRec(buildSeroRec());await doShare(blob,hv('sf-name'));}
+  catch(e){if(e.name!=='AbortError')alert('Could not share: '+e.message);}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+async function haemoShare(){
+  if(!requireName('hf-name'))return;
+  if(!diffIsValid()){alert('⚠️ W.B.C. Differential total must equal exactly 100%.\n\nPlease correct before sharing.');return;}
+  const btn=document.getElementById('haemo-share-btn');const orig=btn.innerHTML;
+  if(typeof html2canvas==='undefined'){btn.innerHTML='⏳ Loading…';await new Promise((r,j)=>{h2cScript.addEventListener('load',r);h2cScript.addEventListener('error',j);});}
+  btn.innerHTML='⏳ Preparing…';btn.disabled=true;
+  try{const blob=await captureEl(document.getElementById('haemo-report'));await saveRec(buildHaemoRec());await doShare(blob,hv('hf-name'));}
+  catch(e){if(e.name!=='AbortError')alert('Could not share: '+e.message);}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+
+/* ══ HISTORY RENDER ══ */
+async function renderHistory(typeFilter,containerId){
+  const wrap=document.getElementById(containerId);
+  const searchId=containerId+'-search';
+  const filterId=containerId+'-filters';
+
+  // Build shell once
+  if(!wrap.querySelector('.history-header')){
+    const title=typeFilter==='all'?'📊 All Reports':typeFilter==='sero'?'🔬 Serology History':typeFilter==='haemo'?'🩸 Haemogram History':typeFilter==='bs'?'🩺 Blood Sugar History':typeFilter==='bill'?'🧾 Bill History':typeFilter==='crpra'?'🧪 CRP/RA History':'🧬 Bio-Chemistry History';
+    const backupBtns=typeFilter==='all'?`
+      <div class="backup-btns" id="backup-btns-area" style="display:flex">
+        <button class="btn-backup" onclick="exportBackup()">⬇️ Export Backup</button>
+        <button class="btn-restore" onclick="document.getElementById('restore-file-input').click()">⬆️ Restore Backup</button>
+        <input type="file" id="restore-file-input" accept=".json" style="display:none" onchange="importBackup(this)">
+      </div>`:'';
+    wrap.innerHTML=`
+      <div class="history-header">
+        <h2>${title}</h2>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <input type="text" class="history-search" id="${searchId}" placeholder="🔍 Search by name..." oninput="renderHistory('${typeFilter}','${containerId}')">
+          ${backupBtns}
+        </div>
+      </div>
+      <div class="filter-bar" id="${filterId}"></div>
+      <div class="history-stats" id="${containerId}-stats"></div>
+      <div class="history-table-wrap" id="${containerId}-table"></div>`;
+  }
+
+  // Get all records
+  let all=await getAllRecs();
+  all.sort((a,b)=>new Date(b.savedAt)-new Date(a.savedAt));
+  if(typeFilter!=='all') all=all.filter(r=>r.type===typeFilter);
+
+  // Build filter bar (once, or re-use existing values)
+  const fb=document.getElementById(filterId);
+  if(!fb.querySelector('.filter-group')){
+    // Collect unique refs for dropdown
+    const refs=[...new Set(all.map(r=>r.ref).filter(Boolean))].sort();
+    fb.innerHTML=`
+      <div class="filter-group">
+        <label>Date From</label>
+        <input type="date" class="filter-date" id="${filterId}-from" onchange="renderHistory('${typeFilter}','${containerId}')">
+      </div>
+      <div class="filter-group">
+        <label>Date To</label>
+        <input type="date" class="filter-date" id="${filterId}-to" onchange="renderHistory('${typeFilter}','${containerId}')">
+      </div>
+      <div class="filter-group">
+        <label>Quick Date</label>
+        <select class="filter-select" id="${filterId}-quick" onchange="applyQuickDate('${filterId}','${typeFilter}','${containerId}')">
+          <option value="">All Time</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Sex</label>
+        <select class="filter-select" id="${filterId}-sex" onchange="renderHistory('${typeFilter}','${containerId}')">
+          <option value="">All</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Ref. By</label>
+        <select class="filter-select" id="${filterId}-ref" onchange="renderHistory('${typeFilter}','${containerId}')">
+          <option value="">All</option>
+          ${refs.map(r=>`<option value="${r}">${r}</option>`).join('')}
+        </select>
+      </div>
+      ${typeFilter==='all'?`
+      <div class="filter-group">
+        <label>Type</label>
+        <select class="filter-select" id="${filterId}-type" onchange="renderHistory('${typeFilter}','${containerId}')">
+          <option value="">All</option>
+          <option value="sero">Serology</option>
+          <option value="haemo">Haemogram</option>
+          <option value="bs">Blood Sugar</option>
+          <option value="bill">Bill</option>
+          <option value="crpra">CRP/RA</option>
+          <option value="biochem">Bio-Chemistry</option>
+        </select>
+      </div>`:''}
+      ${typeFilter==='sero'||typeFilter==='all'?`
+      <div class="filter-group">
+        <label>HBsAg</label>
+        <select class="filter-select" id="${filterId}-hbsag" onchange="renderHistory('${typeFilter}','${containerId}')">
+          <option value="">All</option>
+          <option value="POSITIVE">Positive</option>
+          <option value="NEGATIVE">Negative</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>HIV</label>
+        <select class="filter-select" id="${filterId}-hiv" onchange="renderHistory('${typeFilter}','${containerId}')">
+          <option value="">All</option>
+          <option value="REACTIVE">Reactive</option>
+          <option value="NON-REACTIVE">Non-Reactive</option>
+        </select>
+      </div>`:''}
+      <button class="btn-clear-filters" onclick="clearFilters('${filterId}','${typeFilter}','${containerId}')">✕ Clear Filters</button>
+      <span class="filter-results-count" id="${filterId}-count"></span>
+    `;
+  }
+
+  // Read filter values
+  const query=(document.getElementById(searchId)?.value||'').trim().toLowerCase();
+  const fFrom=document.getElementById(`${filterId}-from`)?.value||'';
+  const fTo=document.getElementById(`${filterId}-to`)?.value||'';
+  const fSex=document.getElementById(`${filterId}-sex`)?.value||'';
+  const fRef=document.getElementById(`${filterId}-ref`)?.value||'';
+  const fType=document.getElementById(`${filterId}-type`)?.value||'';
+  const fHbsag=document.getElementById(`${filterId}-hbsag`)?.value||'';
+  const fHiv=document.getElementById(`${filterId}-hiv`)?.value||'';
+
+  // Parse date from DD/MM/YYYY → Date object (returns null if invalid)
+  const parseDMY=s=>{
+    if(!s)return null;
+    // Try DD/MM/YYYY
+    const parts=s.split('/');
+    if(parts.length===3){
+      const[d,m,y]=parts;
+      const dt=new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`);
+      return isNaN(dt)?null:dt;
+    }
+    // Try YYYY-MM-DD
+    const dt=new Date(s);
+    return isNaN(dt)?null:dt;
+  };
+
+  // Normalise fFrom/fTo to midnight for fair comparison
+  const fromDate=fFrom?new Date(fFrom):null;
+  const toDate=fTo?new Date(fTo+'T23:59:59'):null;
+
+  let filtered=[...all];
+  if(query)   filtered=filtered.filter(r=>r.name.toLowerCase().includes(query));
+  if(fromDate) filtered=filtered.filter(r=>{const d=parseDMY(r.date);return d&&d>=fromDate;});
+  if(toDate)   filtered=filtered.filter(r=>{const d=parseDMY(r.date);return d&&d<=toDate;});
+  if(fSex)    filtered=filtered.filter(r=>r.sex===fSex);
+  if(fRef)    filtered=filtered.filter(r=>r.ref===fRef);
+  if(fType)   filtered=filtered.filter(r=>r.type===fType);
+  if(fHbsag)  filtered=filtered.filter(r=>r.hbsag===fHbsag);
+  if(fHiv)    filtered=filtered.filter(r=>{
+    if(fHiv==='REACTIVE') return r.hiv&&r.hiv.startsWith('REACTIVE');
+    if(fHiv==='NON-REACTIVE') return r.hiv&&r.hiv.startsWith('NON-REACTIVE');
+    return true;
+  });
+
+  // Active filter count indicator
+  const activeCount=[query,fFrom,fTo,fSex,fRef,fType,fHbsag,fHiv].filter(Boolean).length;
+  const countEl=document.getElementById(`${filterId}-count`);
+  if(countEl) countEl.textContent=activeCount>0?`${filtered.length} of ${all.length} records`:`${all.length} records`;
+
+  // Stats — based on filtered set, with total context when filters active
+  const isFiltered = activeCount > 0;
+  const src = filtered; // always show filtered counts
+  const countLabel = isFiltered
+    ? `<div style="font-size:.72rem;color:#718096;text-align:center;margin-bottom:8px;font-style:italic">Showing ${filtered.length} of ${all.length} records</div>`
+    : '';
+
+  document.getElementById(containerId+'-stats').innerHTML=`
+    ${countLabel}
+    <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.length}</div><div class="stat-label">Total${isFiltered?' (filtered)':''}</div></div>
+    <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${new Set(src.map(r=>r.name.toLowerCase())).size}</div><div class="stat-label">Patients${isFiltered?' (filtered)':''}</div></div>
+    ${typeFilter==='all'?`
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.type==='sero').length}</div><div class="stat-label">Serology</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.type==='haemo').length}</div><div class="stat-label">Haemogram</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.type==='bs').length}</div><div class="stat-label">Blood Sugar</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.type==='bill').length}</div><div class="stat-label">Bills</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.type==='crpra').length}</div><div class="stat-label">CRP/RA</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.type==='biochem').length}</div><div class="stat-label">Bio-Chem</div></div>`:''}
+    ${typeFilter==='biochem'?`
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.urea).length}</div><div class="stat-label">Blood Urea</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.sgot||r.sgpt).length}</div><div class="stat-label">Liver Tests</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.chol).length}</div><div class="stat-label">Cholesterol</div></div>`:''}
+    ${typeFilter==='crpra'?`
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.crp).length}</div><div class="stat-label">CRP Tests</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.ra).length}</div><div class="stat-label">RA Tests</div></div>`:''}
+    ${typeFilter==='sero'?`
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.hbsag==='POSITIVE').length}</div><div class="stat-label">HBsAg +ve</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.hiv&&r.hiv.startsWith('REACTIVE')).length}</div><div class="stat-label">HIV Reactive</div></div>`:''}
+    ${typeFilter==='bs'?`
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.rVal).length}</div><div class="stat-label">Random</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.fVal).length}</div><div class="stat-label">Fasting</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">${src.filter(r=>r.pVal).length}</div><div class="stat-label">PP</div></div>`:''}
+    ${typeFilter==='bill'?`
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">₹${src.reduce((s,r)=>s+(r.total||0),0).toFixed(0)}</div><div class="stat-label">Revenue${isFiltered?' (filtered)':''}</div></div>
+      <div class="stat-card${isFiltered?' stat-card-filtered':''}"><div class="stat-num">₹${src.reduce((s,r)=>s+(r.discount||0),0).toFixed(0)}</div><div class="stat-label">Discount${isFiltered?' (filtered)':''}</div></div>`:''}
+  `;
+
+  const tbl=document.getElementById(containerId+'-table');
+  if(filtered.length===0){tbl.innerHTML=`<div class="empty-history"><div>${activeCount>0?'No records match your filters.':'No records found.'}</div></div>`;return;}
+
+  const badge=v=>v==='POSITIVE'?`<span class="badge badge-pos">POSITIVE</span>`:`<span class="badge badge-neg">NEGATIVE</span>`;
+  const hivBadge=v=>v&&v.startsWith('REACTIVE')?`<span class="badge badge-rx">REACTIVE</span>`:`<span class="badge badge-nrx">NON-REACTIVE</span>`;
+  const typeBadge=t=>t==='sero'?`<span class="badge badge-sero">Serology</span>`:t==='haemo'?`<span class="badge badge-haemo">Haemogram</span>`:t==='bs'?`<span class="badge" style="background:#d1fae5;color:#065f46">Blood Sugar</span>`:t==='bill'?`<span class="badge" style="background:#fef3c7;color:#92400e">Bill</span>`:t==='crpra'?`<span class="badge" style="background:#ede9fe;color:#5b21b6">CRP/RA</span>`:`<span class="badge" style="background:#e0f2fe;color:#0369a1">Bio-Chem</span>`;
+
+  tbl.innerHTML=`<table class="history-table"><thead><tr>
+    <th>#</th>${typeFilter==='all'?'<th>Type</th>':''}
+    ${typeFilter==='bill'?'<th>Bill No.</th>':''}
+    <th>Patient Name</th><th>Date</th>
+    ${typeFilter!=='bill'?'<th>Sex</th>':''}
+    <th>Ref. By</th>
+    ${typeFilter==='sero'?'<th>HBsAg</th><th>HIV</th>':''}
+    ${typeFilter==='haemo'?'<th>HB</th><th>WBC</th><th>Platelets</th>':''}
+    ${typeFilter==='bs'?'<th>Random</th><th>Fasting</th><th>Post-PP</th>':''}
+    ${typeFilter==='bill'?'<th>Items</th><th>Subtotal</th><th>Discount</th><th>Amount Due</th>':''}
+    ${typeFilter==='crpra'?'<th>CRP</th><th>RA</th>':''}
+    ${typeFilter==='biochem'?'<th>Blood Urea</th><th>S.Creatinine</th><th>SGOT</th><th>SGPT</th>':''}
+    ${typeFilter==='all'?'<th>Key Result</th>':''}
+    <th>Saved At</th><th>Actions</th>
+  </tr></thead><tbody>
+  ${filtered.map((r,i)=>`<tr>
+    <td>${filtered.length-i}</td>
+    ${typeFilter==='all'?`<td>${typeBadge(r.type)}</td>`:''}
+    ${typeFilter==='bill'?`<td><strong>#${r.billNo||'—'}</strong></td>`:''}
+    <td><strong>${r.name}</strong></td><td>${r.date}</td>
+    ${typeFilter!=='bill'?`<td>${r.sex||'—'}</td>`:''}
+    <td>${r.ref||'—'}</td>
+    ${typeFilter==='sero'?`<td>${r.hbsag?badge(r.hbsag):'—'}</td><td>${r.hiv?hivBadge(r.hiv):'—'}</td>`:''}
+    ${typeFilter==='haemo'?`<td>${r.hb||'—'}</td><td>${r.wbc||'—'}</td><td>${r.plat||'—'}</td>`:''}
+    ${typeFilter==='bs'?`<td>${r.rVal?r.rVal+' mg/dl':'—'}</td><td>${r.fVal?r.fVal+' mg/dl':'—'}</td><td>${r.pVal?r.pVal+' mg/dl':'—'}</td>`:''}
+    ${typeFilter==='bill'?`<td>${r.items?r.items.length:0} test(s)</td><td>₹${(r.subtotal||0).toFixed(2)}</td><td>₹${(r.discount||0).toFixed(2)}</td><td><strong>₹${(r.total||0).toFixed(2)}</strong></td>`:''}
+    ${typeFilter==='crpra'?`<td>${r.crp?r.crp+' mg/dl':'—'}</td><td>${r.ra?r.ra+' IU/mL':'—'}</td>`:''}
+    ${typeFilter==='biochem'?`<td>${r.urea?r.urea+' mg/dl':'—'}</td><td>${r.creat?r.creat+' mg/dl':'—'}</td><td>${r.sgot?r.sgot+' IU/L':'—'}</td><td>${r.sgpt?r.sgpt+' IU/L':'—'}</td>`:''}
+    ${typeFilter==='all'?`<td>${
+      r.type==='bill'?`<strong>₹${(r.total||0).toFixed(2)}</strong>`:
+      r.type==='crpra'?`${r.crp?'CRP:'+r.crp:''}${r.crp&&r.ra?' / ':''}${r.ra?'RA:'+r.ra:''}`:
+      r.type==='biochem'?`${r.urea?'Urea:'+r.urea:''}${r.urea&&r.creat?' · ':''}${r.creat?'Creat:'+r.creat:''}`:
+      r.type==='sero'?(r.hbsag?badge(r.hbsag):'—'):
+      r.type==='haemo'?(r.hb?r.hb+' g%':'—'):
+      (r.rVal||r.fVal||r.pVal?[r.rVal,r.fVal,r.pVal].filter(Boolean).join(' / ')+' mg/dl':'—')
+    }</td>`:''}
+    <td>${fmtDT(r.savedAt)}</td>
+    <td>
+      <button class="btn-load" onclick='loadAndSwitch(${JSON.stringify(r).replace(/'/g,"&#39;")})'>Load</button>
+      <button class="btn-del" onclick="confirmDel(${r.id},'${typeFilter}','${containerId}')">✕</button>
+    </td>
+  </tr>`).join('')}
+  </tbody></table>`;
+}
+
+function applyQuickDate(filterId,typeFilter,containerId){
+  const quick=document.getElementById(`${filterId}-quick`).value;
+  const now=new Date();
+  const fmt=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const fromEl=document.getElementById(`${filterId}-from`);
+  const toEl=document.getElementById(`${filterId}-to`);
+  const todayStr=fmt(now);
+  if(quick==='today'){
+    fromEl.value=todayStr; toEl.value=todayStr;
+  } else if(quick==='week'){
+    const mon=new Date(now);
+    mon.setDate(now.getDate()-((now.getDay()+6)%7)); // Monday
+    fromEl.value=fmt(mon); toEl.value=todayStr;
+  } else if(quick==='month'){
+    fromEl.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+    toEl.value=todayStr;
+  } else {
+    fromEl.value=''; toEl.value='';
+  }
+  renderHistory(typeFilter,containerId);
+}
+
+function clearFilters(filterId,typeFilter,containerId){
+  ['from','to','sex','ref','type','hbsag','hiv','quick'].forEach(k=>{
+    const el=document.getElementById(`${filterId}-${k}`);
+    if(el)el.value='';
+  });
+  const searchEl=document.getElementById(containerId+'-search');
+  if(searchEl)searchEl.value='';
+  renderHistory(typeFilter,containerId);
+}
+
+function loadAndSwitch(r){
+  document.querySelectorAll('.main-tab-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.main-tab-btn').forEach(b=>b.classList.remove('active'));
+  // New order: 0=sero,1=haemo,2=bs,3=biochem,4=crpra,5=bill,6=history
+  if(r.type==='sero'){
+    loadSeroRec(r);
+    document.getElementById('main-serology').classList.add('active');
+    document.querySelectorAll('.main-tab-btn')[0].classList.add('active');
+    document.getElementById('sero-form').classList.add('active');
+    document.getElementById('sero-hist').classList.remove('active');
+    document.querySelectorAll('#main-serology .sub-tab-btn')[0].classList.add('active');
+    document.querySelectorAll('#main-serology .sub-tab-btn')[1].classList.remove('active');
+  } else if(r.type==='haemo'){
+    loadHaemoRec(r);
+    document.getElementById('main-haemogram').classList.add('active');
+    document.querySelectorAll('.main-tab-btn')[1].classList.add('active');
+    document.getElementById('haemo-form').classList.add('active');
+    document.getElementById('haemo-hist').classList.remove('active');
+    document.querySelectorAll('#main-haemogram .sub-tab-btn')[0].classList.add('active');
+    document.querySelectorAll('#main-haemogram .sub-tab-btn')[1].classList.remove('active');
+  } else if(r.type==='bs'){
+    loadBSRec(r);
+    document.getElementById('main-bloodsugar').classList.add('active');
+    document.querySelectorAll('.main-tab-btn')[2].classList.add('active');
+    document.getElementById('bs-form').classList.add('active');
+    document.getElementById('bs-hist').classList.remove('active');
+    document.querySelectorAll('#main-bloodsugar .sub-tab-btn')[0].classList.add('active');
+    document.querySelectorAll('#main-bloodsugar .sub-tab-btn')[1].classList.remove('active');
+  } else if(r.type==='biochem'){
+    loadBiochemRec(r);
+    document.getElementById('main-biochem').classList.add('active');
+    document.querySelectorAll('.main-tab-btn')[3].classList.add('active');
+    document.getElementById('biochem-form').classList.add('active');
+    document.getElementById('biochem-hist').classList.remove('active');
+    document.querySelectorAll('#main-biochem .sub-tab-btn')[0].classList.add('active');
+    document.querySelectorAll('#main-biochem .sub-tab-btn')[1].classList.remove('active');
+  } else if(r.type==='crpra'){
+    loadCRPRARec(r);
+    document.getElementById('main-crpra').classList.add('active');
+    document.querySelectorAll('.main-tab-btn')[4].classList.add('active');
+    document.getElementById('crpra-form').classList.add('active');
+    document.getElementById('crpra-hist').classList.remove('active');
+    document.querySelectorAll('#main-crpra .sub-tab-btn')[0].classList.add('active');
+    document.querySelectorAll('#main-crpra .sub-tab-btn')[1].classList.remove('active');
+  } else if(r.type==='bill'){
+    loadBillRec(r);
+    document.getElementById('main-bill').classList.add('active');
+    document.querySelectorAll('.main-tab-btn')[5].classList.add('active');
+    document.getElementById('bill-form').classList.add('active');
+    document.getElementById('bill-hist').classList.remove('active');
+    document.querySelectorAll('#main-bill .sub-tab-btn')[0].classList.add('active');
+    document.querySelectorAll('#main-bill .sub-tab-btn')[1].classList.remove('active');
+  }
+}
+async function confirmDel(id,typeFilter,containerId){
+  if(confirm('Delete this record?')){await delRec(id);renderHistory(typeFilter,containerId);}
+}
+
+/* ══ Populate BT/CT dropdowns ══ */
+function buildTimeDropdowns(){
+  const secOpts='<option value="">Sec</option>'
+    +[10,20,30,40,50,60].map(s=>`<option value="${String(s).padStart(2,'0')}">${String(s).padStart(2,'0')} sec</option>`).join('')
+    +'<option value="manual">Manual...</option>';
+
+  // BT: 1–4 min
+  let btMins='<option value="">Min</option>';
+  for(let i=1;i<=4;i++) btMins+=`<option value="${i}">${i} min</option>`;
+  btMins+='<option value="manual">Manual...</option>';
+  document.getElementById('hf-bt-min').innerHTML=btMins;
+  document.getElementById('hf-bt-sec').innerHTML=secOpts;
+
+  // CT: 4–10 min
+  let ctMins='<option value="">Min</option>';
+  for(let i=4;i<=10;i++) ctMins+=`<option value="${i}">${i} min</option>`;
+  ctMins+='<option value="manual">Manual...</option>';
+  document.getElementById('hf-ct-min').innerHTML=ctMins;
+  document.getElementById('hf-ct-sec').innerHTML=secOpts;
+}
+
+/* ══ BACKUP & RESTORE ══ */
+async function exportBackup(){
+  try{
+    const all=await getAllRecs();
+    const backup={
+      version:1,
+      exportedAt:new Date().toISOString(),
+      app:'',
+      totalRecords:all.length,
+      records:all
+    };
+    const json=JSON.stringify(backup,null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const now=new Date();
+    const fname=`pitrubhakta_backup_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}.json`;
+    a.href=url;a.download=fname;
+    document.body.appendChild(a);a.click();
+    document.body.removeChild(a);URL.revokeObjectURL(url);
+    alert(`✅ Backup exported successfully!\n\nFile: ${fname}\nTotal records: ${all.length}`);
+  }catch(e){
+    alert('❌ Export failed: '+e.message);
+  }
+}
+
+async function importBackup(input){
+  const file=input.files[0];
+  if(!file)return;
+  input.value=''; // reset so same file can be re-selected
+
+  const confirmed=confirm(
+    '⚠️ Restore Backup\n\n'+
+    'This will ADD all records from the backup file to your existing database.\n'+
+    'Existing records will NOT be deleted.\n\n'+
+    'Do you want to continue?'
+  );
+  if(!confirmed)return;
+
+  try{
+    const text=await file.text();
+    const backup=JSON.parse(text);
+
+    // Validate backup format
+    if(!backup.records||!Array.isArray(backup.records)){
+      alert('❌ Invalid backup file. Please select a valid Pitrubhakta backup JSON file.');
+      return;
+    }
+
+    const records=backup.records;
+    let imported=0,skipped=0;
+
+    // Get existing savedAt values to avoid duplicates
+    const existing=await getAllRecs();
+    const existingKeys=new Set(existing.map(r=>r.savedAt+'_'+r.name+'_'+(r.type||'')));
+
+    for(const rec of records){
+      const key=rec.savedAt+'_'+rec.name+'_'+(rec.type||'');
+      if(existingKeys.has(key)){skipped++;continue;}
+      // Remove old id so DB assigns a new one
+      const{id,...recWithoutId}=rec;
+      await saveRec(recWithoutId);
+      imported++;
+    }
+
+    alert(
+      `✅ Restore Complete!\n\n`+
+      `Imported: ${imported} records\n`+
+      `Skipped (duplicates): ${skipped} records\n`+
+      `Backup date: ${backup.exportedAt?new Date(backup.exportedAt).toLocaleString():'Unknown'}`
+    );
+
+    // Refresh the history view
+    document.getElementById('all-hist-content').innerHTML='';
+    renderHistory('all','all-hist-content');
+
+  }catch(e){
+    alert('❌ Restore failed: '+e.message+'\n\nMake sure you selected a valid backup file.');
+  }
+}
+
+
+
+function handleSaveError(e){
+  return false;
+}
+
+function initSecretCode(){
+  ['sf-name','hf-name','bsf-name','bcf-name','cf-name','bf-name'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('input',()=>checkSecretCode(el.value));
+  });
+}
+
+openDB().then(()=>{
+  buildTimeDropdowns();loadTemplates();seroSync();haemoSync();bsSync();initBill();crpraSync();biochemSync();initSecretCode();initTitleCase();
+  if(localStorage.getItem('_pcl_settings')==='true'){
+    const el=document.getElementById('settings-tab-btn');
+    if(el)el.style.display='';
+  }
+});
+
+</script>
+<div id="main-bill" class="main-tab-page">
+  <div class="sub-tab-bar">
+    <button class="sub-tab-btn active" onclick="switchSub('bill','form',this)">📋 New Bill</button>
+    <button class="sub-tab-btn" onclick="switchSub('bill','hist',this)">🕒 History</button>
+  </div>
+
+  <div id="bill-form" class="sub-tab-page active">
+    <div class="workspace">
+      <aside class="form-panel">
+        <h2>Bill Details</h2>
+        <div class="field">
+          <label>Patient Name</label>
+          <div class="name-wrap">
+            <input type="text" id="bf-name" placeholder="Enter name" autocomplete="off"
+                   oninput="billSync();showSug('bf-name','bill-sug','bill')" onblur="hideSug('bill-sug')">
+            <div class="name-suggestions" id="bill-sug"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Ref. By Dr.</label>
+          <input type="text" id="bf-ref" list="bref-opts" placeholder="Select or type..." oninput="billSync()">
+          <datalist id="bref-opts"><option value="None"><option value="Self"><option value="Sharda Netralay"></datalist>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Age</label>
+            <input type="text" id="bf-age" placeholder="e.g. 49 Yrs" oninput="billSync()">
+          </div>
+          <div class="field">
+            <label>Gender</label>
+            <select id="bf-gender" onchange="billSync()">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Contact No.</label>
+          <input type="text" id="bf-contact" placeholder="e.g. 9422707425" oninput="billSync()">
+        </div>
+        <div class="field">
+          <label>Reporting Location</label>
+          <input type="text" id="bf-location" placeholder="e.g. Accura Diagnostics" oninput="billSync()">
+        </div>
+        <div style="display:none">
+          <input type="text" id="bf-billno" readonly>
+          <input type="text" id="bf-date" readonly>
+        </div>
+
+        <h2 style="margin-top:14px">Test Items</h2>
+        <div id="bill-items-form"></div>
+        <button onclick="addBillRow()" style="width:100%;padding:8px;border:1.5px dashed #1a3a5c;border-radius:6px;background:transparent;color:#1a3a5c;font-size:.85rem;font-weight:600;font-family:inherit;cursor:pointer;margin-top:4px;transition:all .15s" onmouseover="this.style.background='#eef3f8'" onmouseout="this.style.background='transparent'">
+          + Add Test Row
+        </button>
+
+        <h2 style="margin-top:14px">Summary</h2>
+        <div class="field">
+          <label>Discount (₹)</label>
+          <input type="number" id="bf-discount" placeholder="0" min="0" oninput="billSync()">
+        </div>
+        <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-top:4px;font-family:'Inter',sans-serif">
+          <div style="display:flex;justify-content:space-between;font-size:.85rem;color:#555;margin-bottom:6px">
+            <span>Subtotal</span><span id="bf-subtotal-display">₹ 0.00</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.85rem;color:#555;margin-bottom:6px">
+            <span>Discount</span><span id="bf-discount-display">₹ 0.00</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:700;color:#1a3a5c;border-top:1.5px solid #cbd5e0;padding-top:8px;margin-top:4px">
+            <span>Amount Due</span><span id="bf-total-display">₹ 0.00</span>
+          </div>
+        </div>
+
+        <label style="display:flex;align-items:center;gap:8px;margin-top:12px;margin-bottom:4px;font-size:.82rem;font-weight:600;color:#2d3748;cursor:pointer;user-select:none">
+          <input type="checkbox" id="bill-print-header" style="width:16px;height:16px;accent-color:#1a3a5c;cursor:pointer">
+          Print with Header (lab letterhead)
+        </label>
+        <div class="btn-row" style="margin-top:6px">
+          <button class="btn-print" onclick="billPrint()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print
+          </button>
+          <button class="btn-share" id="bill-share-btn" onclick="billShare()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share
+          </button>
+        </div>
+        <button onclick="resetBill()" style="width:100%;margin-top:8px;padding:8px;border:1.5px solid #cbd5e0;border-radius:7px;background:#fff;color:#718096;font-size:.85rem;font-weight:600;font-family:inherit;cursor:pointer">🔄 New Bill</button>
+      </aside>
+
+      <main class="preview-panel">
+        <h2>Live Preview</h2>
+        <div class="report-scaler">
+        <div class="bill-report" id="bill-report">
+
+          <!-- OPTION A: BILL HEADER -->
+          <div class="bill-top">
+            <div class="bill-top-inner">
+              <div class="bill-left">
+                <div class="bill-lab-name">Pitrubhakta Clinical Lab</div>
+                <div class="bill-lab-tag">Computerised Diagnostic Laboratory</div>
+                <div class="bill-lab-addr">
+                  117/B, Income Tax Colony, Opp. Sharda Netralay, Nakane Road<br>
+                  Dhule - 424002 &nbsp;·&nbsp; 9422707425
+                </div>
+              </div>
+              <div class="bill-right">
+                <div class="bill-invoice-badge">Invoice</div>
+                <div class="bill-meta">
+                  <div><b>Bill No.</b><span id="br-billno">—</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BILL TO -->
+          <div class="bill-body">
+            <div class="bill-to-box">
+              <div class="bill-to-row" style="justify-content:space-between;align-items:baseline">
+                <div style="display:flex;align-items:baseline;flex:1">
+                  <span class="bill-to-lbl">Patient Name</span><span class="bill-to-colon">:</span><span class="bill-to-val" id="br-name">—</span>
+                </div>
+                <div class="bill-noheader-meta" style="display:flex;align-items:baseline;gap:6px;flex-shrink:0;margin-left:12px">
+                  <span style="font-size:10pt;font-weight:700;white-space:nowrap">Bill No.</span>
+                  <span style="font-size:10pt;font-weight:700;white-space:nowrap" id="br-billno-noheader">—</span>
+                </div>
+              </div>
+              <div class="bill-to-row" id="br-age-row" style="justify-content:space-between;align-items:baseline">
+                <div style="display:flex;align-items:baseline;flex:1">
+                  <span class="bill-to-lbl">Age/Gender</span><span class="bill-to-colon">:</span><span class="bill-to-val" id="br-age">—</span>
+                </div>
+                <div class="bill-noheader-meta" style="display:flex;align-items:baseline;gap:6px;flex-shrink:0;margin-left:12px">
+                  <span style="font-size:10pt;font-weight:700;white-space:nowrap">Date</span>
+                  <span style="font-size:10pt;font-weight:700;white-space:nowrap" id="br-date-noheader">—</span>
+                </div>
+              </div>
+              <div class="bill-to-row"><span class="bill-to-lbl">Refer Doctor</span><span class="bill-to-colon">:</span><span class="bill-to-val" id="br-ref">—</span></div>
+              <div class="bill-to-row"><span class="bill-to-lbl">Contact No.</span><span class="bill-to-colon">:</span><span class="bill-to-val" id="br-contact"></span></div>
+              <div class="bill-to-row" id="br-location-row"><span class="bill-to-lbl">Reporting Location</span><span class="bill-to-colon">:</span><span class="bill-to-val" id="br-location"></span></div>
+            </div>
+
+            <!-- ITEMS TABLE -->
+            <table class="bill-items-table">
+              <thead><tr><th>Test Name</th><th>Price</th></tr></thead>
+              <tbody id="br-items"></tbody>
+            </table>
+
+            <!-- TOTALS -->
+            <div class="bill-totals">
+              <div class="bill-total-row"><span>Subtotal</span><span id="br-subtotal">0.00</span></div>
+              <div class="bill-total-row bill-discount-row"><span>Discount</span><span id="br-discount">0.00</span></div>
+              <div class="bill-total-row bill-less-row"><span>Subtotal Less Discount</span><span id="br-subtotal-less">0.00</span></div>
+            </div>
+            <div class="bill-amount-due">
+              <span>Amount Due</span>
+              <span id="br-amount-due">₹ 0.00</span>
+            </div>
+
+            <!-- SIGNATURE + FOOTER NOTE -->
+            <div class="bill-footer-row">
+              <div class="bill-sign-area">
+                <div class="bill-sign-line"></div>
+                <div class="bill-sign-name"></div>
+                <div class="bill-sign-reg">Reg. No. PGD/MLT/0005/2021</div>
+              </div>
+              <div class="bill-footer-note">Thank you for choosing<br></div>
+            </div>
+          </div>
+
+        </div><!-- /bill-report -->
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Bill History -->
+  <div id="bill-hist" class="sub-tab-page">
+    <div class="history-page" id="bill-hist-content"></div>
+  </div>
+</div>
+
+<style>
+/* ══ BILL REPORT — Option A: Classic Professional ══ */
+.bill-report{
+  font-family:'Inter','Arial',sans-serif;
+  font-size:10.5pt;color:#1a1a2e;background:#fff;
+  width:100%;max-width:700px;margin:0 auto;
+  border:1px solid #dde3ec;
+  display:flex;flex-direction:column;
+}
+
+/* Top header */
+.bill-top{padding:22px 28px 16px;border-bottom:3px solid #1a1a2e}
+.bill-top-inner{display:flex;justify-content:space-between;align-items:flex-start}
+.bill-left{}
+.bill-lab-name{font-size:20pt;font-weight:800;color:#1a1a2e;letter-spacing:-.01em;line-height:1;margin-bottom:4px}
+.bill-lab-tag{font-size:8pt;color:#666;letter-spacing:.04em;margin-bottom:8px}
+.bill-lab-addr{font-size:8.5pt;color:#555;line-height:1.85}
+.bill-right{text-align:right;flex-shrink:0;margin-left:20px}
+.bill-invoice-badge{background:#1a1a2e;color:#fff;display:inline-block;padding:4px 16px;font-size:8pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-radius:3px;margin-bottom:10px}
+.bill-meta{font-size:9pt;color:#333;line-height:2}
+.bill-meta b{display:inline-block;min-width:58px;text-align:left;color:#1a1a2e}
+.bill-meta span{border-bottom:1px solid #aaa;padding-bottom:1px;min-width:90px;display:inline-block;text-align:right}
+
+/* Body */
+.bill-body{padding:16px 28px 20px;position:relative}
+
+/* Bill To */
+.bill-to-box{padding:10px 0 14px;margin-bottom:16px;border-bottom:1px solid #ddd}
+.bill-to-row{display:flex;align-items:baseline;padding:3px 0;font-size:11pt;line-height:1.6}
+.bill-to-lbl{font-weight:700;width:160px;flex-shrink:0;font-size:11pt}
+.bill-to-colon{width:16px;font-weight:700;flex-shrink:0}
+.bill-to-val{font-weight:700;font-size:11pt;flex:1}
+
+/* Items table */
+.bill-items-table{width:100%;border-collapse:collapse;margin-bottom:0}
+.bill-items-table thead tr{border-bottom:2px solid #1a1a2e}
+.bill-items-table thead th{padding:7px 8px;font-size:8.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#1a1a2e;text-align:left}
+.bill-items-table thead th:last-child{text-align:right}
+.bill-items-table tbody td{padding:6px 8px;font-size:10.5pt;border-bottom:1px solid #eee;color:#333}
+.bill-items-table tbody td:last-child{text-align:right;font-weight:500;color:#1a1a2e}
+.bill-items-table tbody tr:last-child td{border-bottom:2px solid #ccc}
+
+/* Totals */
+.bill-totals{margin-top:0}
+.bill-total-row{display:flex;justify-content:space-between;padding:4px 8px;font-size:9.5pt;color:#555}
+.bill-discount-row{color:#666}
+.bill-less-row{border-top:1px solid #ddd;border-bottom:1px solid #ddd;padding:5px 8px;font-weight:600;color:#1a1a2e}
+
+/* Amount Due */
+.bill-amount-due{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:11px 8px;margin-top:6px;
+  border-top:3px solid #1a1a2e;border-bottom:3px solid #1a1a2e;
+}
+.bill-amount-due span:first-child{font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.bill-amount-due span:last-child{font-size:14pt;font-weight:800;color:#1a1a2e}
+
+/* Footer row */
+.bill-footer-row{margin-top:28px;display:flex;justify-content:space-between;align-items:flex-end;padding-top:12px;border-top:1px solid #ddd}
+.bill-sign-line{width:150px;border-top:1.5px solid #1a1a2e;margin-bottom:5px}
+.bill-sign-name{font-size:9pt;font-weight:600;color:#1a1a2e}
+.bill-sign-reg{font-size:8pt;color:#666;margin-top:1px}
+.bill-footer-note{font-size:8pt;color:#888;text-align:right;line-height:1.6;font-style:italic;max-width:200px}
+
+/* Bill form item rows */
+.bill-item-row{display:grid;grid-template-columns:1fr 110px 28px;gap:6px;margin-bottom:6px;align-items:center}
+.bill-item-row input{padding:6px 8px;border:1.5px solid #cbd5e0;border-radius:5px;font-size:.83rem;font-family:inherit;width:100%;color:#1a2332;background:#f7fafc}
+.bill-item-row input:focus{outline:none;border-color:#1a3a5c;background:#fff}
+.btn-del-row{background:#fee2e2;border:none;border-radius:5px;color:#dc2626;cursor:pointer;font-size:.85rem;padding:5px 7px;line-height:1}
+.btn-del-row:hover{background:#fecaca}
+
+@media print{
+  .bill-report{max-width:none;width:100%;border:none;min-height:100vh}
+  .bill-items-table thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+
+<script>
+
+
+/* ══ BILL STATE ══ */
+let billRows=[];
+let currentBillNo=1;
+
+/* ══ Get next bill number from DB ══ */
+async function getNextBillNo(){
+  const all=await getAllRecs();
+  const bills=all.filter(r=>r.type==='bill');
+  if(bills.length===0)return 1;
+  const max=Math.max(...bills.map(r=>r.billNo||0));
+  return max+1;
+}
+
+/* ══ Init bill form ══ */
+async function initBill(){
+  currentBillNo=await getNextBillNo();
+  document.getElementById('bf-billno').value=currentBillNo;
+  document.getElementById('bf-date').value=today;
+  document.getElementById('br-billno').textContent=currentBillNo;
+  document.getElementById('br-date').textContent=today;
+  const nhDate=document.getElementById('br-date-noheader');
+  const nhBillNo=document.getElementById('br-billno-noheader');
+  if(nhDate) nhDate.textContent=today;
+  if(nhBillNo) nhBillNo.textContent=currentBillNo;
+  billRows=[{test:'',price:''}];
+  renderBillRows();
+  billSync();
+}
+
+/* ══ Render bill form rows ══ */
+function renderBillRows(){
+  const c=document.getElementById('bill-items-form');
+  c.innerHTML='';
+  // Header labels
+  const hdr=document.createElement('div');
+  hdr.style.cssText='display:grid;grid-template-columns:1fr 110px 28px;gap:6px;margin-bottom:4px';
+  hdr.innerHTML='<span style="font-size:.7rem;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.05em">Test Name</span><span style="font-size:.7rem;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.05em">Price (₹)</span><span></span>';
+  c.appendChild(hdr);
+  billRows.forEach((row,i)=>{
+    const div=document.createElement('div');
+    div.className='bill-item-row';
+    div.innerHTML=`
+      <input type="text" placeholder="Test name" value="${row.test}"
+             oninput="billRows[${i}].test=this.value;billSync()">
+      <input type="number" placeholder="0.00" value="${row.price}" min="0" step="0.01"
+             oninput="billRows[${i}].price=this.value;billSync()">
+      <button class="btn-del-row" onclick="removeBillRow(${i})">✕</button>
+    `;
+    c.appendChild(div);
+  });
+}
+
+function addBillRow(){
+  billRows.push({test:'',price:''});
+  renderBillRows();
+  // focus last test name input
+  const inputs=document.getElementById('bill-items-form').querySelectorAll('input[type=text]');
+  if(inputs.length)inputs[inputs.length-1].focus();
+}
+
+function removeBillRow(i){
+  if(billRows.length===1){billRows[0]={test:'',price:''};renderBillRows();billSync();return;}
+  billRows.splice(i,1);
+  renderBillRows();
+  billSync();
+}
+
+/* ══ Bill sync ══ */
+function billSync(){
+  // patient info
+  document.getElementById('br-name').textContent=toTitleCase(document.getElementById('bf-name').value.trim())||'—';autoShrinkName('br-name');
+  const ref=document.getElementById('bf-ref').value.trim();
+  document.getElementById('br-ref').textContent=ref||'—';
+  const age=document.getElementById('bf-age').value.trim();
+  const gender=document.getElementById('bf-gender').value;
+  document.getElementById('br-age').textContent=age?(age+' / '+gender):gender;
+  document.getElementById('br-contact').textContent=document.getElementById('bf-contact').value.trim()||'';
+  const loc=document.getElementById('bf-location').value.trim();
+  document.getElementById('br-location').textContent=loc;
+  // Keep no-header date/billno in sync (shown when printing without header)
+  const curDate=(document.getElementById('bf-date')?.value)||today;
+  const nhDate=document.getElementById('br-date-noheader');
+  const nhBillNo=document.getElementById('br-billno-noheader');
+  if(nhDate) nhDate.textContent=curDate;
+  if(nhBillNo) nhBillNo.textContent=currentBillNo||'—';
+  // Also keep header date in sync
+  const hrDate=document.getElementById('br-date');
+  if(hrDate) hrDate.textContent=curDate;
+
+  // items table
+  const tbody=document.getElementById('br-items');
+  const filled=billRows.filter(r=>r.test.trim()||r.price);
+  tbody.innerHTML=filled.length
+    ?filled.map(r=>`<tr><td>${r.test||'—'}</td><td>${r.price?parseFloat(r.price).toFixed(2):''}</td></tr>`).join('')
+    :'<tr><td colspan="2" style="text-align:center;color:#aaa;padding:14px;font-size:9.5pt">No items added yet</td></tr>';
+
+  // totals
+  const subtotal=billRows.reduce((s,r)=>s+(parseFloat(r.price)||0),0);
+  const discount=parseFloat(document.getElementById('bf-discount').value)||0;
+  const total=Math.max(0,subtotal-discount);
+
+  document.getElementById('br-subtotal').textContent=subtotal.toFixed(2);
+  document.getElementById('br-discount').textContent=discount.toFixed(2);
+  document.getElementById('br-subtotal-less').textContent=total.toFixed(2);
+  document.getElementById('br-amount-due').textContent='₹ '+total.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  // form summary
+  document.getElementById('bf-subtotal-display').textContent='₹ '+subtotal.toFixed(2);
+  document.getElementById('bf-discount-display').textContent='₹ '+discount.toFixed(2);
+  document.getElementById('bf-total-display').textContent='₹ '+total.toFixed(2);
+}
+
+/* ══ Build bill record ══ */
+function buildBillRec(){
+  const subtotal=billRows.reduce((s,r)=>s+(parseFloat(r.price)||0),0);
+  const discount=parseFloat(document.getElementById('bf-discount').value)||0;
+  return{
+    type:'bill',
+    billNo:currentBillNo,
+    name:document.getElementById('bf-name').value.trim()||'Unknown',
+    date:document.getElementById('bf-date').value,
+    ref:document.getElementById('bf-ref').value.trim(),
+    age:document.getElementById('bf-age').value.trim(),
+    gender:document.getElementById('bf-gender').value,
+    contact:document.getElementById('bf-contact').value.trim(),
+    location:document.getElementById('bf-location').value.trim(),
+    items:[...billRows.filter(r=>r.test.trim()||r.price)],
+    subtotal,discount,
+    total:Math.max(0,subtotal-discount),
+    savedAt:new Date().toISOString()
+  };
+}
+
+function loadBillRec(r){
+  if(r.items!==undefined){
+    document.getElementById('bf-name').value=r.name||'';
+    document.getElementById('bf-ref').value=r.ref||'';
+    document.getElementById('bf-age').value=r.age||'';
+    if(r.gender)document.getElementById('bf-gender').value=r.gender;
+    document.getElementById('bf-contact').value=r.contact||'';
+    document.getElementById('bf-location').value=r.location||'';
+    document.getElementById('bf-discount').value=r.discount||0;
+    billRows=r.items&&r.items.length?r.items.map(i=>({test:i.test,price:i.price})):[{test:'',price:''}];
+    renderBillRows();
+  } else {
+    document.getElementById('bf-name').value=r.name||'';
+    document.getElementById('bf-ref').value=r.ref||'';
+    document.getElementById('bf-age').value=r.age||'';
+    if(r.gender)document.getElementById('bf-gender').value=r.gender;
+    document.getElementById('bf-contact').value=r.contact||'';
+    document.getElementById('bf-location').value=r.location||'';
+  }
+  billSync();
+}
+
+/* ══ Reset for new bill ══ */
+async function resetBill(){
+  document.getElementById('bf-name').value='';
+  document.getElementById('bf-ref').value='';
+  document.getElementById('bf-discount').value='';
+  billRows=[{test:'',price:''}];
+  currentBillNo=await getNextBillNo();
+  document.getElementById('bf-billno').value=currentBillNo;
+  document.getElementById('br-billno').textContent=currentBillNo;
+  const nhBillNo=document.getElementById('br-billno-noheader');
+  if(nhBillNo) nhBillNo.textContent=currentBillNo;
+  renderBillRows();
+  billSync();
+}
+
+/* ══ Bill Print ══ */
+async function billPrint(){
+  if(!requireName('bf-name'))return;
+  try{await saveRec(buildBillRec());}catch(e){if(handleSaveError(e))return;}
+  currentBillNo=await getNextBillNo();
+  document.getElementById('bf-billno').value=currentBillNo;
+  const withHeader=document.getElementById('bill-print-header')?.checked||false;
+  printBillOnly('bill-report','A4',withHeader);
+}
+
+/* ══ Bill-specific print — handles header toggle ══ */
+function printBillOnly(reportId, pageSize, withHeader){
+  const baseMargins=getMargins(reportId);
+  // When printing with header: top margin = 0 so header starts at page edge
+  // When printing without header: use the saved settings margins
+  const m=withHeader?{...baseMargins, top:0}:baseMargins;
+  const isA5=pageSize==='A5';
+
+  // Show or hide the bill-top header and noheader meta elements
+  const billReport=document.getElementById(reportId);
+  const billTop=billReport.querySelector('.bill-top');
+  const noheaderMetas=billReport.querySelectorAll('.bill-noheader-meta');
+  if(billTop) billTop.setAttribute('data-print-show', withHeader?'1':'0');
+  noheaderMetas.forEach(el=>el.setAttribute('data-print-show', withHeader?'0':'1'));
+
+  _printStyle.textContent=`
+    @media print {
+      @page { size:${pageSize}; margin:0; }
+      html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body { margin:0!important; padding:0!important; }
+      body > *:not(.print-target-wrap) { display:none !important; }
+      .print-target-wrap { display:block !important; width:100%; min-height:100vh; }
+      .print-target-wrap .bill-report {
+        border:none!important; max-width:none!important; width:100%!important;
+        min-height:100vh; font-size:11.5pt;
+        padding:${m.top}mm ${m.right}mm ${m.bottom}mm ${m.left}mm !important;
+      }
+      /* Header: show only when printing with header */
+      .print-target-wrap .bill-top { ${withHeader?'display:block!important':'display:none!important'} }
+      .print-target-wrap .bill-footer-row { display:none!important }
+      /* No-header meta (date/billno next to patient info): show only without header */
+      .print-target-wrap .bill-noheader-meta { ${withHeader?'display:none!important':'display:flex!important'} }
+    }
+  `;
+
+  const report=document.getElementById(reportId);
+  const wrapper=document.createElement('div');
+  wrapper.className='print-target-wrap';
+  const placeholder=document.createElement('span');
+  report.parentNode.insertBefore(placeholder,report);
+  wrapper.appendChild(report);
+  document.body.appendChild(wrapper);
+
+  const restoreReport=()=>{
+    try{placeholder.parentNode.insertBefore(report,placeholder);}catch(e){}
+    try{placeholder.remove();}catch(e){}
+    try{wrapper.remove();}catch(e){}
+    _printStyle.textContent='';
+  };
+
+  let allCSS='';
+  try{
+    allCSS=Array.from(document.styleSheets).map(ss=>{
+      try{return Array.from(ss.cssRules).map(r=>r.cssText).join('\n');}catch(e){return '';}
+    }).join('\n');
+  }catch(e){}
+
+  const printHTML=`<!DOCTYPE html><html><head><meta charset="utf-8">
+<style>
+@page{size:${pageSize} portrait;margin:0}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+html,body{margin:0;padding:0;width:100%;height:100%}
+${allCSS}
+@media print{
+  @page{size:${pageSize} portrait;margin:0}
+  html,body{margin:0;padding:0}
+}
+.print-target-wrap .bill-report{
+  border:none!important;max-width:none!important;width:100%!important;
+  font-size:11.5pt;
+  padding:${m.top}mm ${m.right}mm ${m.bottom}mm ${m.left}mm!important;
+}
+.print-target-wrap .bill-top{${withHeader?'display:block!important':'display:none!important'}}
+.print-target-wrap .bill-footer-row{display:none!important}
+.print-target-wrap .bill-noheader-meta{${withHeader?'display:none!important':'display:flex!important'}}
+</style>
+</head><body>${wrapper.outerHTML}</body></html>`;
+
+  const iframe=document.createElement('iframe');
+  iframe.style.cssText='position:fixed;top:0;left:0;width:0;height:0;border:none;opacity:0;pointer-events:none';
+  document.body.appendChild(iframe);
+  const iframeDoc=iframe.contentDocument||iframe.contentWindow.document;
+  iframeDoc.open();
+  iframeDoc.write(printHTML);
+  iframeDoc.close();
+
+  setTimeout(()=>{
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+    iframe.contentWindow.addEventListener('afterprint',()=>{
+      iframe.remove();
+      restoreReport();
+      setTimeout(()=>window.location.reload(),300);
+    });
+    setTimeout(()=>{
+      if(document.body.contains(iframe))iframe.remove();
+      restoreReport();
+    },30000);
+  },800);
+}
+
+/* ══ Bill Share ══ */
+async function billShare(){
+  if(!requireName('bf-name'))return;
+  const btn=document.getElementById('bill-share-btn');const orig=btn.innerHTML;
+  if(typeof html2canvas==='undefined'){btn.innerHTML='⏳ Loading…';await new Promise((r,j)=>{h2cScript.addEventListener('load',r);h2cScript.addEventListener('error',j);});}
+  btn.innerHTML='⏳ Preparing…';btn.disabled=true;
+  try{
+    const withHeader=document.getElementById('bill-print-header')?.checked||false;
+    const billRpt=document.getElementById('bill-report');
+    const billTop=billRpt.querySelector('.bill-top');
+    const noheaderMetas=billRpt.querySelectorAll('.bill-noheader-meta');
+    // Temporarily adjust visibility for capture
+    if(billTop) billTop.style.display=withHeader?'':'none';
+    noheaderMetas.forEach(el=>el.style.display=withHeader?'none':'flex');
+    const blob=await captureEl(billRpt);
+    // Restore
+    if(billTop) billTop.style.display='';
+    noheaderMetas.forEach(el=>el.style.display='');
+    await saveRec(buildBillRec());
+    currentBillNo=await getNextBillNo();
+    document.getElementById('bf-billno').value=currentBillNo;
+    await doShare(blob,document.getElementById('bf-name').value.trim()||'Patient');
+  }catch(e){if(!handleSaveError(e)&&e.name!=='AbortError')alert('Could not share: '+e.message);}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+
+
+</script>
+
+<!-- ════════════════════════════════════════
+     CRP/RA TEST MAIN TAB
+════════════════════════════════════════ -->
+<div id="main-crpra" class="main-tab-page">
+  <div class="sub-tab-bar">
+    <button class="sub-tab-btn active" onclick="switchSub('crpra','form',this)">📋 Form</button>
+    <button class="sub-tab-btn" onclick="switchSub('crpra','hist',this)">🕒 History</button>
+  </div>
+
+  <div id="crpra-form" class="sub-tab-page active">
+    <div class="workspace">
+      <aside class="form-panel">
+        <h2>Patient Details</h2>
+        <div class="field">
+          <label>Patient Name</label>
+          <div class="name-wrap">
+            <input type="text" id="cf-name" placeholder="Enter name" autocomplete="off"
+                   oninput="crpraSync();showSug('cf-name','crpra-sug','crpra')" onblur="hideSug('crpra-sug')">
+            <div class="name-suggestions" id="crpra-sug"></div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="display:none"><label>Date</label><input type="text" id="cf-date" readonly></div>
+          <div class="field"><label>Sex</label>
+            <select id="cf-sex" onchange="crpraSync()">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Ref. By Dr.</label>
+          <input type="text" id="cf-ref" list="cref-opts" placeholder="Select or type..." oninput="crpraSync()">
+          <datalist id="cref-opts"><option value="None"><option value="Self"><option value="Sharda Netralay"></datalist>
+        </div>
+
+        <h2 style="margin-top:14px">Test Values</h2>
+
+        <div class="result-group">
+          <h3>CRP Test</h3>
+          <div class="field">
+            <label>Result Value (mg/dl)</label>
+            <input type="number" id="cf-crp" placeholder="e.g. 2.7" step="0.1" min="0" oninput="crpraSync()">
+          </div>
+          <div style="font-size:.75rem;color:#718096;margin-top:2px">Normal Range: 0 – 6 mg/dl</div>
+        </div>
+
+        <div class="result-group">
+          <h3>R.A. Test</h3>
+          <div class="field">
+            <label>Result Value (IU/mL)</label>
+            <input type="number" id="cf-ra" placeholder="e.g. 2.7" step="0.1" min="0" oninput="crpraSync()">
+          </div>
+          <div style="font-size:.75rem;color:#718096;margin-top:2px">Normal Range: Less than 20 IU/mL</div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-print" onclick="crpraPrint()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print
+          </button>
+          <button class="btn-share" id="crpra-share-btn" onclick="crpraShare()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share
+          </button>
+        </div>
+      </aside>
+
+      <main class="preview-panel">
+        <h2>Live Preview</h2>
+        <div class="report-scaler">
+        <div class="report crpra-report" id="crpra-report">
+
+          <!-- LAB HEADER (same as others) -->
+          <div class="lab-header">
+            <div class="lab-header-top">
+              <div class="microscope-circle">
+                <svg viewBox="0 0 100 100" fill="none"><rect x="44" y="8" width="12" height="22" rx="4" fill="#2d3a6e"/><rect x="40" y="28" width="20" height="8" rx="3" fill="#2d3a6e"/><rect x="44" y="34" width="12" height="28" rx="3" fill="#3a4a80"/><rect x="46" y="60" width="8" height="14" rx="3" fill="#2d3a6e"/><rect x="28" y="72" width="44" height="6" rx="3" fill="#3a5a8c"/><ellipse cx="50" cy="88" rx="26" ry="6" fill="#2d3a6e"/><rect x="38" y="36" width="8" height="40" rx="3" fill="#4a6aa0"/><ellipse cx="34" cy="55" rx="7" ry="5" fill="#5a7ab0"/><ellipse cx="34" cy="67" rx="5" ry="4" fill="#7a9ac0"/></svg>
+              </div>
+              <div class="lab-title-block">
+                <div class="lab-name"></div>
+                <div class="lab-sub">Computerised</div>
+              </div>
+            </div>
+            <div class="lab-header-bottom">
+              <div class="lab-address" style="font-size:8.5pt">117/B, Income Tax Colony, Infront of Sharda Netralay,<br>Nakane Road, Deopur, Dhule- 424002<br>
+                <span class="phone"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/></svg>: 9422707425</span>
+              </div>
+              <div class="lab-doctor" style="font-size:8.5pt">Mrs. Manjusha P. Pitrubhakta<br>B.Sc.,D.M.L.T. (Pune)<br><span class="reg">Reg. No.: PGD/MLT/0005/2021</span></div>
+            </div>
+          </div>
+
+          <!-- REPORT BODY -->
+          <div class="report-body">
+            <table class="meta-table">
+              <colgroup><col class="c-label"><col class="c-colon"><col class="c-value"><col class="c-gap"><col class="c-rlabel"><col class="c-rcolon"><col class="c-rvalue"></colgroup>
+              <tr>
+                <td class="meta-label">Patient's Name</td><td class="meta-colon">:</td>
+                <td class="meta-value" id="cr-name">—</td>
+                <td></td>
+                <td class="meta-label">Date</td><td class="meta-colon">:</td>
+                <td class="meta-value" id="cr-date">—</td>
+              </tr>
+              <tr>
+                <td class="meta-label">Ref. By Dr.</td><td class="meta-colon">:</td>
+                <td class="meta-value" id="cr-ref">—</td>
+                <td></td>
+                <td class="meta-label">Sex/Age</td><td class="meta-colon">:</td>
+                <td class="meta-value" id="cr-sex">Male/0 Years.</td>
+              </tr>
+            </table>
+
+            <hr class="report-hr">
+
+            <!-- Dynamic title -->
+            <div class="crpra-title" id="cr-title">CRP TEST ( TURBIDOMETRY )</div>
+
+            <!-- 3-column table -->
+            <div class="crpra-col-headers">
+              <span>Test Name</span>
+              <span>Result</span>
+              <span>Normal Range</span>
+            </div>
+
+            <div id="cr-rows"></div>
+
+            <div class="signature-area">SIGNATURE</div>
+          </div>
+
+          <!-- LAB FOOTER -->
+          <div class="lab-footer">
+            <div class="footer-ornament">&#x1F4D6;&#x2764;&#x1F4D6;</div>
+            <div class="footer-bar">
+              <div class="footer-text">These are only reading based on technical analysis and no opinion is indicated therefore said reading's<br>should please be got certified by pathologist before using the same for diagnosis and treatment</div>
+            </div>
+          </div>
+
+        </div><!-- /crpra-report -->
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- CRP/RA History -->
+  <div id="crpra-hist" class="sub-tab-page">
+    <div class="history-page" id="crpra-hist-content"></div>
+  </div>
+</div>
+
+<style>
+/* ── CRP/RA report specific ── */
+.crpra-title{
+  text-align:center;font-size:13pt;font-weight:700;
+  text-decoration:underline;text-transform:uppercase;
+  letter-spacing:.06em;margin-bottom:18px;
+}
+.crpra-col-headers{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  font-weight:700;font-size:11.5pt;text-decoration:underline;
+  text-underline-offset:5px;
+  margin-bottom:20px;gap:8px;
+  padding-bottom:4px;
+  border-bottom:1px solid #1a1a2e;
+}
+.crpra-row{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  font-size:12pt;gap:8px;margin-bottom:12px;
+  align-items:baseline;padding:4px 0;
+  border-bottom:1px solid #f0f0f0;
+}
+.crpra-row:last-child{border-bottom:none}
+.crpra-test-name{font-weight:400}
+.crpra-result{font-weight:400}
+.crpra-range{font-weight:400;font-size:11pt;color:#333}
+</style>
+
+<script>
+/* ══ CRP/RA SYNC ══ */
+function cfv(id){return document.getElementById(id).value.trim();}
+
+function crpraSync(){
+  // patient info
+  document.getElementById('cr-name').textContent=cfv('cf-name')||'—';autoShrinkName('cr-name');
+  document.getElementById('cr-ref').textContent  = cfv('cf-ref')||'—';
+  document.getElementById('cr-sex').textContent  = document.getElementById('cf-sex').value+'/0 Years.';
+  document.getElementById('cr-date').textContent = (document.getElementById('cf-date')?.value)||today;
+
+  const crp = cfv('cf-crp');
+  const ra  = cfv('cf-ra');
+
+  // Dynamic title
+  let title = '';
+  if(crp && ra)       title = 'RA AND CRP TEST ( TURBIDOMETRY )';
+  else if(crp)        title = 'CRP TEST ( TURBIDOMETRY )';
+  else if(ra)         title = 'RA TEST ( TURBIDOMETRY )';
+  else                title = 'CRP TEST ( TURBIDOMETRY )';
+  document.getElementById('cr-title').textContent = title;
+
+  // Build rows — only show filled tests
+  const rows = [];
+  if(crp) rows.push({
+    name: 'C R P  Test',
+    result: parseFloat(crp).toFixed(1) + '  mg/dl',
+    range: '0 - 6mg/dl'
+  });
+  if(ra) rows.push({
+    name: 'R. A.  Test',
+    result: parseFloat(ra).toFixed(1) + '  IU/mL',
+    range: 'Less than 20 IU/mL'
+  });
+
+  document.getElementById('cr-rows').innerHTML = rows.map(r=>`
+    <div class="crpra-row">
+      <span class="crpra-test-name">${r.name}</span>
+      <span class="crpra-result">${r.result}</span>
+      <span class="crpra-range">${r.range}</span>
+    </div>
+  `).join('');
+}
+
+function buildCRPRARec(){
+  return{
+    type:'crpra',
+    name: cfv('cf-name')||'Unknown',
+    date: cfv('cf-date'),
+    sex:  document.getElementById('cf-sex').value,
+    ref:  cfv('cf-ref'),
+    crp:  cfv('cf-crp'),
+    ra:   cfv('cf-ra'),
+    savedAt: new Date().toISOString()
+  };
+}
+
+function loadCRPRARec(r){
+  const f=(id,v)=>{if(v!==undefined&&document.getElementById(id))document.getElementById(id).value=v||'';};
+  f('cf-name',r.name); f('cf-sex',r.sex); f('cf-ref',r.ref);
+  f('cf-crp',r.crp);   f('cf-ra',r.ra);
+  crpraSync();
+}
+
+async function crpraPrint(){
+  if(!requireName('cf-name'))return;
+  try{await saveRec(buildCRPRARec());}catch(e){if(handleSaveError(e))return;}
+  printOnly('crpra-report','A4');
+}
+
+async function crpraShare(){
+  if(!requireName('cf-name'))return;
+  const btn=document.getElementById('crpra-share-btn');const orig=btn.innerHTML;
+  if(typeof html2canvas==='undefined'){btn.innerHTML='⏳ Loading…';await new Promise((r,j)=>{h2cScript.addEventListener('load',r);h2cScript.addEventListener('error',j);});}
+  btn.innerHTML='⏳ Preparing…';btn.disabled=true;
+  try{
+    const blob=await captureEl(document.getElementById('crpra-report'));
+    await saveRec(buildCRPRARec());
+    await doShare(blob,cfv('cf-name'));
+  }catch(e){if(!handleSaveError(e)&&e.name!=='AbortError')alert('Could not share: '+e.message);}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+</script>
+
+<!-- ════════════════════════════════════════
+     BIO-CHEMISTRY MAIN TAB
+════════════════════════════════════════ -->
+<div id="main-biochem" class="main-tab-page">
+  <div class="sub-tab-bar">
+    <button class="sub-tab-btn active" onclick="switchSub('biochem','form',this)">📋 Form</button>
+    <button class="sub-tab-btn" onclick="switchSub('biochem','hist',this)">🕒 History</button>
+  </div>
+
+  <div id="biochem-form" class="sub-tab-page active">
+    <div class="workspace">
+      <aside class="form-panel">
+        <h2>Patient Details</h2>
+        <div class="field">
+          <label>Patient Name</label>
+          <div class="name-wrap">
+            <input type="text" id="bcf-name" placeholder="Enter name" autocomplete="off"
+                   oninput="biochemSync();showSug('bcf-name','biochem-sug','biochem')" onblur="hideSug('biochem-sug')">
+            <div class="name-suggestions" id="biochem-sug"></div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="display:none"><label>Date</label><input type="text" id="bcf-date" readonly></div>
+          <div class="field"><label>Sex</label>
+            <select id="bcf-sex" onchange="biochemSync()">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Ref. By Dr.</label>
+          <input type="text" id="bcf-ref" list="bcref-opts" placeholder="Select or type..." oninput="biochemSync()">
+          <datalist id="bcref-opts"><option value="None"><option value="Self"><option value="Sharda Netralay"></datalist>
+        </div>
+
+        <h2 style="margin-top:14px">Test Values</h2>
+
+        <div class="field"><label>Blood Urea (mg/dl)</label><input type="number" id="bcf-urea" placeholder="e.g. 25.0" step="0.1" min="0" oninput="biochemSync()"></div>
+        <div class="field"><label>S.Creatinine (mg/dl)</label><input type="number" id="bcf-creat" placeholder="e.g. 0.9" step="0.1" min="0" oninput="biochemSync()"></div>
+        <div class="field"><label>S.Uric Acid (mg/dl)</label><input type="number" id="bcf-uric" placeholder="e.g. 4.4" step="0.1" min="0" oninput="biochemSync()"></div>
+
+        <div class="result-group">
+          <h3>S.Bilirubin</h3>
+          <div class="field"><label>Total (mg/dl)</label><input type="number" id="bcf-bil-total" placeholder="e.g. 0.7" step="0.1" min="0" oninput="biochemSync()"></div>
+          <div class="field"><label>Direct (mg/dl)</label><input type="number" id="bcf-bil-direct" placeholder="e.g. 0.4" step="0.1" min="0" oninput="biochemSync()"></div>
+          <div class="field"><label>Indirect (mg/dl)</label><input type="number" id="bcf-bil-indirect" placeholder="e.g. 0.3" step="0.1" min="0" oninput="biochemSync()"></div>
+        </div>
+
+        <div class="field"><label>S.G.O.T. (IU/L)</label><input type="number" id="bcf-sgot" placeholder="e.g. 22.0" step="0.1" min="0" oninput="biochemSync()"></div>
+        <div class="field"><label>S.G.P.T. (IU/L)</label><input type="number" id="bcf-sgpt" placeholder="e.g. 27.0" step="0.1" min="0" oninput="biochemSync()"></div>
+        <div class="field"><label>Serum Total Cholesterol (mg/dl)</label><input type="number" id="bcf-chol" placeholder="e.g. 145.0" step="0.1" min="0" oninput="biochemSync()"></div>
+        <div class="field"><label>Serum Triglycerides (mg/dl)</label><input type="number" id="bcf-trig" placeholder="e.g. 125.0" step="0.1" min="0" oninput="biochemSync()"></div>
+        <div class="field"><label>HDL-Cholesterol (mg/dl)</label><input type="number" id="bcf-hdl" placeholder="e.g. 55.0" step="0.1" min="0" oninput="biochemSync()"></div>
+        <div class="field"><label>LDL-Cholesterol (mg/dl)</label><input type="number" id="bcf-ldl" placeholder="e.g. 75.0" step="0.1" min="0" oninput="biochemSync()"></div>
+
+        <div class="btn-row">
+          <button class="btn-print" onclick="biochemPrint()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print
+          </button>
+          <button class="btn-share" id="biochem-share-btn" onclick="biochemShare()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share
+          </button>
+        </div>
+      </aside>
+
+      <main class="preview-panel">
+        <h2>Live Preview</h2>
+        <div class="report-scaler">
+        <div class="report" id="biochem-report">
+
+          <!-- LAB HEADER -->
+          <div class="lab-header">
+            <div class="lab-header-top">
+              <div class="microscope-circle">
+                <svg viewBox="0 0 100 100" fill="none"><rect x="44" y="8" width="12" height="22" rx="4" fill="#2d3a6e"/><rect x="40" y="28" width="20" height="8" rx="3" fill="#2d3a6e"/><rect x="44" y="34" width="12" height="28" rx="3" fill="#3a4a80"/><rect x="46" y="60" width="8" height="14" rx="3" fill="#2d3a6e"/><rect x="28" y="72" width="44" height="6" rx="3" fill="#3a5a8c"/><ellipse cx="50" cy="88" rx="26" ry="6" fill="#2d3a6e"/><rect x="38" y="36" width="8" height="40" rx="3" fill="#4a6aa0"/><ellipse cx="34" cy="55" rx="7" ry="5" fill="#5a7ab0"/><ellipse cx="34" cy="67" rx="5" ry="4" fill="#7a9ac0"/></svg>
+              </div>
+              <div class="lab-title-block">
+                <div class="lab-name"></div>
+                <div class="lab-sub">Computerised</div>
+              </div>
+            </div>
+            <div class="lab-header-bottom">
+              <div class="lab-address">117/B, Income Tax Colony, Infront of Sharda Netralay,<br>Nakane Road, Deopur, Dhule- 424002<br>
+                <span class="phone"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/></svg>: 9422707425</span>
+              </div>
+              <div class="lab-doctor">Mrs. Manjusha P. Pitrubhakta<br>B.Sc.,D.M.L.T. (Pune)<br><span class="reg">Reg. No.: PGD/MLT/0005/2021</span></div>
+            </div>
+          </div>
+
+          <!-- REPORT BODY -->
+          <div class="report-body">
+            <table class="meta-table">
+              <colgroup><col class="c-label"><col class="c-colon"><col class="c-value"><col class="c-gap"><col class="c-rlabel"><col class="c-rcolon"><col class="c-rvalue"></colgroup>
+              <tr>
+                <td class="meta-label">Patient's Name</td><td class="meta-colon">:</td>
+                <td class="meta-value" id="bcr-name">—</td>
+                <td></td>
+                <td class="meta-label">Date</td><td class="meta-colon">:</td>
+                <td class="meta-value" id="bcr-date">—</td>
+              </tr>
+              <tr>
+                <td class="meta-label">Ref. By Dr.</td><td class="meta-colon">:</td>
+                <td class="meta-value" id="bcr-ref">—</td>
+                <td></td>
+                <td class="meta-label">Sex</td><td class="meta-colon">:</td>
+                <td class="meta-value" id="bcr-sex">Male</td>
+              </tr>
+            </table>
+
+            <hr class="report-hr">
+            <div class="report-title" style="letter-spacing:.15em">Bio - Chemistry Report</div>
+
+            <!-- 3-column headers -->
+            <div class="bc-col-headers">
+              <span>Test Name</span>
+              <span>Result</span>
+              <span>Normal Range</span>
+            </div>
+
+            <div id="bcr-rows"></div>
+
+            <div class="signature-area">SIGNATURE</div>
+          </div>
+
+          <!-- LAB FOOTER -->
+          <div class="lab-footer">
+            <div class="footer-ornament">&#x1F4D6;&#x2764;&#x1F4D6;</div>
+            <div class="footer-bar">
+              <div class="footer-text">These are only reading based on technical analysis and no opinion is indicated therefore said reading's<br>should please be got certified by pathologist before using the same for diagnosis and treatment</div>
+            </div>
+          </div>
+
+        </div><!-- /biochem-report -->
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Bio-Chemistry History -->
+  <div id="biochem-hist" class="sub-tab-page">
+    <div class="history-page" id="biochem-hist-content"></div>
+  </div>
+</div>
+
+<style>
+/* ── Bio-Chemistry report ── */
+.bc-col-headers{
+  display:grid;grid-template-columns:42% 30% 28%;
+  font-weight:700;font-size:11.5pt;text-decoration:underline;
+  margin-bottom:8px;gap:0;padding-bottom:4px;
+  border-bottom:1px solid #1a1a2e;
+}
+.bc-row{
+  display:grid;grid-template-columns:42% 30% 28%;
+  font-size:12pt;gap:0;padding:5px 0;
+  border-bottom:1px solid #f0f0f0;align-items:baseline;
+}
+.bc-row:last-child{border-bottom:none}
+.bc-row.bc-parent{font-weight:700;border-bottom:none;padding-bottom:2px;padding-top:8px}
+.bc-row.bc-child{padding-left:0;font-size:11.5pt;padding-top:3px;padding-bottom:3px}
+.bc-row.bc-child .bc-name{padding-left:20px}
+.bc-name{font-weight:400}
+.bc-parent .bc-name{font-weight:700}
+.bc-result{font-weight:400}
+.bc-range{font-weight:400;font-size:11pt;color:#333}
+</style>
+
+<script>
+/* ══ BIO-CHEMISTRY SYNC ══ */
+function bcfv(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+function bcfmt(v){if(!v)return '';const n=parseFloat(v);return isNaN(n)?v:n.toFixed(1);}
+
+/* Test definitions — label, fieldId, unit appended to result, normal range */
+const BC_TESTS=[
+  {id:'urea',   label:'Blood Urea',             unit:'mg/dl', range:'10 - 50 mg/dl',    field:'bcf-urea'},
+  {id:'creat',  label:'S.Creatinine',            unit:'mg/dl', range:'0.8 - 1.4 mg/dl',  field:'bcf-creat'},
+  {id:'uric',   label:'S.Uric Acid',             unit:'mg/dl', range:'2.4 - 5.7 mg/dl',  field:'bcf-uric'},
+  {id:'bilirubin', label:'S.Bilirubin',          unit:'',      range:'',                  field:null, isParent:true},
+  {id:'bil-total',   label:'Total',              unit:'mg/dl', range:'0 - 1.0 mg/dl',    field:'bcf-bil-total',   isChild:true},
+  {id:'bil-direct',  label:'Direct',             unit:'mg/dl', range:'0 - 0.30 mg/dl',   field:'bcf-bil-direct',  isChild:true},
+  {id:'bil-indirect',label:'Indirect',           unit:'mg/dl', range:'0.3 - 0.7 mg/dl',  field:'bcf-bil-indirect',isChild:true},
+  {id:'sgot',   label:'S.G.O.T.',                unit:'IU/L',  range:'UPTO - 40 IU/L',   field:'bcf-sgot'},
+  {id:'sgpt',   label:'S.G.P.T.',                unit:'IU/L',  range:'UPTO - 40 IU/L',   field:'bcf-sgpt'},
+  {id:'chol',   label:'Serum Total Cholesterol', unit:'mg/dl', range:'140 - 250 mg/dl',  field:'bcf-chol'},
+  {id:'trig',   label:'Serum Triglycerides',     unit:'mg/dl', range:'60 - 165 mg/dl',   field:'bcf-trig'},
+  {id:'hdl',    label:'HDL-Cholesterol',         unit:'mg/dl', range:'30 - 70 mg/dl',    field:'bcf-hdl'},
+  {id:'ldl',    label:'LDL-Cholesterol',         unit:'mg/dl', range:'65 - 160 mg/dl',   field:'bcf-ldl'},
+];
+
+function biochemSync(){
+  document.getElementById('bcr-name').textContent=bcfv('bcf-name')||'—';autoShrinkName('bcr-name');
+  document.getElementById('bcr-ref').textContent  = bcfv('bcf-ref')||'—';
+  document.getElementById('bcr-sex').textContent  = document.getElementById('bcf-sex').value;
+  document.getElementById('bcr-date').textContent = (document.getElementById('bcf-date')?.value)||today;
+
+  // Build rows — skip empty fields, skip parent if no children filled
+  const rows=[];
+  let i=0;
+  while(i<BC_TESTS.length){
+    const t=BC_TESTS[i];
+    if(t.isParent){
+      // Collect children
+      const children=[];
+      let j=i+1;
+      while(j<BC_TESTS.length&&BC_TESTS[j].isChild){
+        const cv=bcfv(BC_TESTS[j].field);
+        if(cv) children.push({...BC_TESTS[j],val:cv});
+        j++;
+      }
+      if(children.length>0){
+        // Show parent label row
+        rows.push(`<div class="bc-row bc-parent"><span class="bc-name">${t.label}</span><span></span><span></span></div>`);
+        // Show each filled child
+        children.forEach(c=>{
+          rows.push(`<div class="bc-row bc-child">
+            <span class="bc-name">${c.label}</span>
+            <span class="bc-result">${bcfmt(c.val)} ${c.unit}</span>
+            <span class="bc-range">${c.range}</span>
+          </div>`);
+        });
+      }
+      i=j;
+    } else {
+      const v=bcfv(t.field);
+      if(v){
+        rows.push(`<div class="bc-row">
+          <span class="bc-name">${t.label}</span>
+          <span class="bc-result">${bcfmt(v)} ${t.unit}</span>
+          <span class="bc-range">${t.range}</span>
+        </div>`);
+      }
+      i++;
+    }
+  }
+
+  document.getElementById('bcr-rows').innerHTML=rows.length
+    ?rows.join('')
+    :'<div style="color:#aaa;font-size:10pt;padding:12px 0">No values entered yet</div>';
+}
+
+function buildBiochemRec(){
+  return{
+    type:'biochem',
+    name:bcfv('bcf-name')||'Unknown',
+    date:bcfv('bcf-date'),
+    sex:document.getElementById('bcf-sex').value,
+    ref:bcfv('bcf-ref'),
+    urea:bcfv('bcf-urea'), creat:bcfv('bcf-creat'), uric:bcfv('bcf-uric'),
+    bilTotal:bcfv('bcf-bil-total'), bilDirect:bcfv('bcf-bil-direct'), bilIndirect:bcfv('bcf-bil-indirect'),
+    sgot:bcfv('bcf-sgot'), sgpt:bcfv('bcf-sgpt'),
+    chol:bcfv('bcf-chol'), trig:bcfv('bcf-trig'),
+    hdl:bcfv('bcf-hdl'),   ldl:bcfv('bcf-ldl'),
+    savedAt:new Date().toISOString()
+  };
+}
+
+function loadBiochemRec(r){
+  const f=(id,v)=>{const el=document.getElementById(id);if(el&&v!==undefined)el.value=v||'';};
+  f('bcf-name',r.name); f('bcf-sex',r.sex); f('bcf-ref',r.ref);
+  f('bcf-urea',r.urea);   f('bcf-creat',r.creat);       f('bcf-uric',r.uric);
+  f('bcf-bil-total',r.bilTotal); f('bcf-bil-direct',r.bilDirect); f('bcf-bil-indirect',r.bilIndirect);
+  f('bcf-sgot',r.sgot);  f('bcf-sgpt',r.sgpt);
+  f('bcf-chol',r.chol);  f('bcf-trig',r.trig);
+  f('bcf-hdl',r.hdl);    f('bcf-ldl',r.ldl);
+  biochemSync();
+}
+
+async function biochemPrint(){
+  if(!requireName('bcf-name'))return;
+  try{await saveRec(buildBiochemRec());}catch(e){if(handleSaveError(e))return;}
+  printOnly('biochem-report','A4');
+}
+
+async function biochemShare(){
+  if(!requireName('bcf-name'))return;
+  const btn=document.getElementById('biochem-share-btn');const orig=btn.innerHTML;
+  if(typeof html2canvas==='undefined'){btn.innerHTML='⏳ Loading…';await new Promise((r,j)=>{h2cScript.addEventListener('load',r);h2cScript.addEventListener('error',j);});}
+  btn.innerHTML='⏳ Preparing…';btn.disabled=true;
+  try{
+    const blob=await captureEl(document.getElementById('biochem-report'));
+    await saveRec(buildBiochemRec());
+    await doShare(blob,bcfv('bcf-name'));
+  }catch(e){if(!handleSaveError(e)&&e.name!=='AbortError')alert('Could not share: '+e.message);}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+</script>
+
+<!-- ════════════════════════════════════════
+     SETTINGS TAB
+════════════════════════════════════════ -->
+<div id="main-settings" class="main-tab-page">
+  <div class="settings-page">
+    <div class="settings-header">
+      <h2>⚙️ Print Margin Settings</h2>
+      <p>Set the spacing for each report type separately. These values are saved permanently and used every time you print.</p>
+    </div>
+
+    <div class="settings-grid" id="settings-grid"></div>
+  </div>
+</div>
+
+<style>
+/* ── Settings page ── */
+.settings-page{padding:24px 28px;max-width:1200px;margin:0 auto}
+.settings-header{margin-bottom:22px}
+.settings-header h2{font-size:1.1rem;font-weight:600;color:#1a3a5c;margin-bottom:6px}
+.settings-header p{font-size:.85rem;color:#718096}
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.settings-card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.08);border-top:4px solid #1a3a5c}
+.settings-card-title{font-size:.95rem;font-weight:700;color:#1a3a5c;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.margin-slider-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.margin-slider-row label{font-size:.78rem;font-weight:600;color:#4a5568;text-transform:uppercase;letter-spacing:.05em;width:55px;flex-shrink:0}
+.margin-slider-row input[type=range]{flex:1;accent-color:#1a3a5c;cursor:pointer;height:4px}
+.margin-slider-val{font-size:.78rem;font-weight:700;color:#1a3a5c;width:42px;text-align:right;flex-shrink:0}
+.btn-save-margins{width:100%;margin-top:6px;padding:9px;background:#1a3a5c;color:#fff;border:none;border-radius:7px;font-size:.85rem;font-weight:600;font-family:inherit;cursor:pointer;transition:background .15s}
+.btn-save-margins:hover{background:#254e7a}
+.btn-reset-margins{width:100%;margin-top:6px;padding:7px;background:#f7fafc;color:#718096;border:1.5px solid #cbd5e0;border-radius:7px;font-size:.82rem;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s}
+.btn-reset-margins:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5}
+.settings-saved{font-size:.75rem;color:#16a34a;font-weight:600;text-align:center;margin-top:6px;height:16px}
+@media(max-width:768px){.settings-page{padding:16px}.settings-grid{grid-template-columns:1fr}}
+</style>
+
+<script>
+/* ══ SETTINGS — Margin Sliders ══ */
+const MARGIN_TABS=[
+  {key:'sero',   label:'🔬 Serology',        pageSize:'A4'},
+  {key:'haemo',  label:'🩸 Haemogram',       pageSize:'A4'},
+  {key:'bs',     label:'🩺 Blood Sugar',     pageSize:'A5'},
+  {key:'biochem',label:'🧬 Bio-Chemistry',   pageSize:'A4'},
+  {key:'crpra',  label:'🧪 CRP / RA',        pageSize:'A4'},
+  {key:'bill',   label:'🧾 Bill',            pageSize:'A4'},
+];
+
+function buildSettingsCards(){
+  const grid=document.getElementById('settings-grid');
+  if(!grid||grid.children.length>0)return;
+
+  MARGIN_TABS.forEach(tab=>{
+    const m=getMargins(tab.key+'-report');
+    const savedSize=getTabPageSize(tab.key,tab.pageSize);
+    const card=document.createElement('div');
+    card.className='settings-card';
+    card.id='settings-card-'+tab.key;
+    card.innerHTML=`
+      <div class="settings-card-title">${tab.label}</div>
+      <div class="margin-slider-row" style="margin-bottom:8px">
+        <label>Paper Size</label>
+        <select id="ms-${tab.key}-pagesize" style="margin-left:8px;padding:2px 6px;border-radius:4px;border:1px solid #cbd5e0"
+          onchange="saveTabPageSize('${tab.key}',this.value)">
+          <option value="A4" ${savedSize==='A4'?'selected':''}>A4</option>
+          <option value="A5" ${savedSize==='A5'?'selected':''}>A5</option>
+        </select>
+      </div>
+      ${['top','bottom','left','right'].map(side=>`
+        <div class="margin-slider-row">
+          <label>${side}</label>
+          <input type="range" min="0" max="80" value="${side==='top'?m.top:side==='bottom'?m.bottom:side==='left'?m.left:m.right}"
+                 id="ms-${tab.key}-${side}" step="1"
+                 oninput="document.getElementById('msv-${tab.key}-${side}').textContent=this.value+'mm'">
+          <span class="margin-slider-val" id="msv-${tab.key}-${side}">${side==='top'?m.top:side==='bottom'?m.bottom:side==='left'?m.left:m.right}mm</span>
+        </div>
+      `).join('')}
+      <button class="btn-save-margins" onclick="saveTabMargins('${tab.key}')">💾 Save</button>
+      <button class="btn-reset-margins" onclick="resetTabMargins('${tab.key}')">↺ Reset to Default</button>
+      <div class="settings-saved" id="settings-saved-${tab.key}"></div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function saveTabPageSize(key,size){
+  localStorage.setItem('_pcl_pagesize_'+key,size);
+}
+function getTabPageSize(key,defaultSize){
+  return localStorage.getItem('_pcl_pagesize_'+key)||defaultSize;
+}
+
+function saveTabMargins(key){
+  const margins={
+    top:   parseInt(document.getElementById(`ms-${key}-top`).value),
+    bottom:parseInt(document.getElementById(`ms-${key}-bottom`).value),
+    left:  parseInt(document.getElementById(`ms-${key}-left`).value),
+    right: parseInt(document.getElementById(`ms-${key}-right`).value),
+  };
+  saveMargins(key,margins);
+  const msg=document.getElementById('settings-saved-'+key);
+  msg.textContent='✅ Saved!';
+  setTimeout(()=>msg.textContent='',2000);
+}
+
+function resetTabMargins(key){
+  const def=TAB_DEFAULT_MARGINS[key]||DEFAULT_MARGINS;
+  saveMargins(key,{...def});
+  ['top','bottom','left','right'].forEach(side=>{
+    const slider=document.getElementById(`ms-${key}-${side}`);
+    const val=document.getElementById(`msv-${key}-${side}`);
+    const def2=TAB_DEFAULT_MARGINS[key]||DEFAULT_MARGINS;
+    if(slider){slider.value=def2[side];val.textContent=def2[side]+'mm';}
+  });
+  const msg=document.getElementById('settings-saved-'+key);
+  msg.textContent='↺ Reset to default (15mm)';
+  setTimeout(()=>msg.textContent='',2000);
+}
+</script>
+</body>
+</html>
